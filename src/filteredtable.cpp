@@ -379,6 +379,13 @@ void CFilteredTable::SetStretchColumn(int iColumn)
 	fillStretchColumn();
 }
 
+void CFilteredTable::SetStretchLastColumn(bool bEnabled)
+{
+	m_bStretchLastColumn = bEnabled;
+
+	updateStretchFallback();
+}
+
 bool CFilteredTable::IsColumnVisible(int iColumn) const
 {
 	if (iColumn < 0 || iColumn >= columnCount())
@@ -732,10 +739,11 @@ void CFilteredTable::updateStretchFallback()
 {
 	// Two columns cannot both absorb the slack, so the last section's built-in
 	// stretch is only wanted when the designated stretch column is not there to
-	// do the job — either none was set, or the user has hidden it.
+	// do the job — either none was set, or the user has hidden it — and the
+	// panel has not opted out of stretching altogether.
 	bool const bStretchColumnUsable = m_iStretchColumn >= 0 && !m_pView->isColumnHidden(m_iStretchColumn);
 
-	m_pView->horizontalHeader()->setStretchLastSection(!bStretchColumnUsable);
+	m_pView->horizontalHeader()->setStretchLastSection(m_bStretchLastColumn && !bStretchColumnUsable);
 }
 
 QString CFilteredTable::selectionAsText() const

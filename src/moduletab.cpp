@@ -135,6 +135,10 @@ void CModuleTab::buildUi()
 	m_pImportsTable->SetStretchColumn(static_cast<int>(CImportsModel::EColumn::Symbol));
 	m_pExportsTable->SetStretchColumn(static_cast<int>(CExportsModel::EColumn::Symbol));
 
+	// The modules table has no such column: every column has a natural width, so
+	// spare panel width stays blank instead of inflating whichever column is last.
+	m_pModulesTable->SetStretchLastColumn(false);
+
 	updateStatusLabel();
 }
 

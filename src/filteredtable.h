@@ -50,6 +50,9 @@ private:
 	bool m_bAutoResize = true;
 	bool m_bFirstPopulation = true;
 	bool m_bAdjustingStretch = false;
+	// Whether the last visible column may absorb spare width when no designated
+	// stretch column is there to do it; off leaves the spare width blank.
+	bool m_bStretchLastColumn = true;
 
 public:
 	explicit CFilteredTable(QWidget* pParent = nullptr);
@@ -84,6 +87,7 @@ public:
 	void ResizeColumnsToContents();
 	void SetAutoResizeColumns(bool bEnabled);
 	void SetStretchColumn(int iColumn);
+	void SetStretchLastColumn(bool bEnabled);
 
 	bool IsColumnVisible(int iColumn) const;
 	void SetColumnVisible(int iColumn, bool bVisible);
