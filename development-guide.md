@@ -19,7 +19,7 @@ the configured generator; `build/` is git-ignored.
 cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr
 cmake --build build
 ./build/bin/kdepends /usr/bin/some-binary     # run without installing
-sudo cmake --install build                    # binary, .desktop, XmlGui rc
+sudo cmake --install build                    # binary and .desktop entry
 ```
 
 Incremental builds: `ninja -C build`. `compile_commands.json` is exported for
@@ -30,9 +30,16 @@ Requirements: C++20 compiler, Qt â‰¥ 6.5 (Core, Gui, Widgets), KDE Frameworks â‰
 
 Notes when running from the build tree:
 
-- `setupGUI` looks for the installed `kdependsui.rc`. Uninstalled runs fall back
-  to the compiled-in defaults, so menu/toolbar layout may differ from an
-  installed run. Install before judging menu structure.
+- `kdependsui.rc` is compiled in as a Qt resource under `:/kxmlgui5/kdepends/`,
+  which is where `setupGUI` looks first, so menu and toolbar layout is identical
+  installed or not. Nothing else needs installing to get the real UI.
+- The desktop portal resolves app info from `kdepends.desktop` *and* from
+  `kdepends` being on `PATH`. Neither holds in a build-tree run, so
+  `qt.qpa.services` logs one "App info not found" warning at launch. It is
+  harmless and disappears once the app is installed.
+- Qt on this distribution logs to the systemd journal when stderr is not a
+  terminal. Set `QT_FORCE_STDERR_LOGGING=1` to see warnings when redirecting
+  output to a file or a pipe.
 - Settings live in `kdependsrc` (options) and the state config (recent files,
   geometry, splitter state) under `~/.config`.
 

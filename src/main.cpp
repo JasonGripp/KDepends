@@ -7,7 +7,6 @@
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QFileInfo>
-#include <QGuiApplication>
 #include <QIcon>
 #include <QString>
 #include <QStringList>
@@ -31,10 +30,15 @@ int main(int iArgc, char** ppcArgv)
 		QStringLiteral("https://github.com/kdepends/kdepends"),
 		QStringLiteral("https://github.com/kdepends/kdepends/issues"));
 
+	// KAboutData otherwise derives this from the homepage host, giving
+	// "com.github.kdepends"; the installed entry is kdepends.desktop, so say so
+	// explicitly. setApplicationData() propagates it to QGuiApplication, which
+	// is what the desktop portal and the Wayland app id are read from.
+	aboutData.setDesktopFileName(QStringLiteral("kdepends"));
+
 	KAboutData::setApplicationData(aboutData);
 
 	QApplication::setWindowIcon(ApplicationIcon());
-	QGuiApplication::setDesktopFileName(QStringLiteral("kdepends"));
 
 	QCommandLineParser parser;
 	aboutData.setupCommandLine(&parser);

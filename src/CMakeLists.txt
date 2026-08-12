@@ -24,6 +24,15 @@ target_sources(kdepends PRIVATE
 
 set_target_properties(kdepends PROPERTIES AUTOMOC ON)
 
+# KXMLGUIClient resolves an .rc file from ":/kxmlgui5/<component>/<file>" before
+# it falls back to the installed copy, so compiling it in makes an uninstalled
+# run behave exactly like an installed one instead of silently dropping back to
+# the built-in default layout.
+qt_add_resources(kdepends "kdepends_xmlgui"
+	PREFIX "/kxmlgui5/kdepends"
+	FILES kdependsui.rc
+)
+
 # KDECompilerSettings compiles with -fno-exceptions. The analysis tasks run on
 # a thread pool and must not let an unexpected exception (a std::bad_alloc from
 # a huge file, say) cross a thread boundary, so they wrap their work in
@@ -47,5 +56,4 @@ target_link_libraries(kdepends PRIVATE
 target_include_directories(kdepends PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 install(TARGETS kdepends ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
-install(FILES kdependsui.rc DESTINATION ${KDE_INSTALL_KXMLGUIDIR}/kdepends)
 install(PROGRAMS kdepends.desktop DESTINATION ${KDE_INSTALL_APPDIR})
