@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #include "icons.h"
+#include "kdepends_version.h"
 #include "mainwindow.h"
 
 #include <KAboutData>
@@ -25,10 +26,10 @@ int main(int iArgc, char** ppcArgv)
 	KAboutData aboutData(
 		QStringLiteral("kdepends"),
 		i18n("KDepends"),
-		QStringLiteral("1.0.0"),
+		QStringLiteral(KDEPENDS_VERSION_STRING),
 		i18n("ELF dependency inspector"),
 		KAboutLicense::MIT,
-		i18n("© 2026 Jason Gripp"),
+		i18n("Copyright © 2026 Jason Gripp"),
 		i18n("A KDE recreation of Dependency Walker for Linux ELF binaries."),
 		QStringLiteral("https://github.com/kdepends/kdepends"),
 		QStringLiteral("https://github.com/kdepends/kdepends/issues"));

@@ -65,7 +65,8 @@ target_link_libraries(kdepends PRIVATE
 	KF6::KIOGui
 )
 
-target_include_directories(kdepends PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+# CMAKE_BINARY_DIR is where ecm_setup_version() writes kdepends_version.h.
+target_include_directories(kdepends PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_BINARY_DIR})
 
 install(TARGETS kdepends ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 install(PROGRAMS kdepends.desktop DESTINATION ${KDE_INSTALL_APPDIR})

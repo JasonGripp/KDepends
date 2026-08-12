@@ -3,7 +3,7 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-project(kdepends VERSION 1.0.0 LANGUAGES CXX)
+project(kdepends VERSION 0.1.0 LANGUAGES CXX)
 
 set(KF_MIN_VERSION "6.0.0")
 set(QT_MIN_VERSION "6.5.0")
@@ -17,6 +17,13 @@ include(KDECompilerSettings NO_POLICY_SCOPE)
 include(ECMSetupVersion)
 include(ECMInstallIcons)
 include(FeatureSummary)
+
+# Generates kdepends_version.h from the project() version above, so the version
+# number is defined in exactly one place; main.cpp feeds it to KAboutData.
+ecm_setup_version(${PROJECT_VERSION}
+	VARIABLE_PREFIX KDEPENDS
+	VERSION_HEADER "${CMAKE_BINARY_DIR}/kdepends_version.h"
+)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
