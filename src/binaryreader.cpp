@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Jason Gripp
+// Licensed under the MIT License.
+
 #include "binaryreader.h"
 
 #include "elfstructs.h"

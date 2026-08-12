@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Jason Gripp
+// Licensed under the MIT License.
+
 #include "icons.h"
 
 #include "elfstructs.h"
@@ -119,7 +122,13 @@ QIcon SymbolTypeIcon(ESymbolType eType)
 
 QIcon ApplicationIcon()
 {
-	return themedIcon("application-x-executable", "applications-development");
+	// Installed, the icon theme copy wins so the user's theme can override it;
+	// from the build tree the theme lookup fails and the compiled-in resource
+	// keeps the real icon.
+	if (QIcon::hasThemeIcon(QStringLiteral("kdepends")))
+		return QIcon::fromTheme(QStringLiteral("kdepends"));
+
+	return QIcon(QStringLiteral(":/icons/sc-apps-kdepends.svg"));
 }
 
 QColor ModuleStatusColor(EModuleStatus eStatus)

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Jason Gripp
+// Licensed under the MIT License.
+
 #include "filteredtable.h"
 
 #include <KLocalizedString>

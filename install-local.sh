@@ -20,7 +20,9 @@ BUILD_TYPE="Release"
 PREFIX="${HOME}/.local"
 BIN_DIR="${PREFIX}/bin"
 APP_DIR="${PREFIX}/share/applications"
+ICON_DIR="${PREFIX}/share/icons"
 DESKTOP_FILE="kdepends.desktop"
+ICON_SOURCE="src/icons/sc-apps-kdepends.svg"
 
 case "${1:-}" in
 	--clean)
@@ -60,6 +62,13 @@ then
 	update-desktop-database -q -- "${APP_DIR}" || true
 fi
 
+# Icon lookup treats loose files in the root of ~/.local/share/icons as a
+# last-resort match for Icon=kdepends, and unlike the hicolor tree it needs no
+# cache update, so the icon shows up immediately.
+echo "==> Installing kdepends.svg to ${ICON_DIR}"
+mkdir -p -- "${ICON_DIR}"
+install -m 0644 -- "${SOURCE_DIR}/${ICON_SOURCE}" "${ICON_DIR}/kdepends.svg"
+
 # The desktop portal resolves the app from the desktop entry *and* from its Exec
 # name being findable on PATH. Without both it logs an "App info not found"
 # warning on every launch.
@@ -77,3 +86,4 @@ echo
 echo "Installed:"
 echo "  ${BIN_DIR}/kdepends"
 echo "  ${APP_DIR}/${DESKTOP_FILE}"
+echo "  ${ICON_DIR}/kdepends.svg"

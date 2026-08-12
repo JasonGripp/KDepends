@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Jason Gripp
+// Licensed under the MIT License.
+
 #include "icons.h"
 #include "mainwindow.h"
 
@@ -25,7 +28,7 @@ int main(int iArgc, char** ppcArgv)
 		QStringLiteral("1.0.0"),
 		i18n("ELF dependency inspector"),
 		KAboutLicense::MIT,
-		i18n("© 2026 KDepends contributors"),
+		i18n("© 2026 Jason Gripp"),
 		i18n("A KDE recreation of Dependency Walker for Linux ELF binaries."),
 		QStringLiteral("https://github.com/kdepends/kdepends"),
 		QStringLiteral("https://github.com/kdepends/kdepends/issues"));

@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Exec=kdepends %U
-Icon=application-x-executable
+Icon=kdepends
 Terminal=false
 Name=KDepends
 GenericName=ELF Dependency Inspector

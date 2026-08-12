@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Jason Gripp
+# Licensed under the MIT License.
+
 add_executable(kdepends)
 
 target_sources(kdepends PRIVATE
@@ -33,6 +36,15 @@ qt_add_resources(kdepends "kdepends_xmlgui"
 	FILES kdependsui.rc
 )
 
+# The application icon is compiled in so an uninstalled build-tree run shows
+# the real icon; an installed run prefers the icon theme copy (see
+# ApplicationIcon() in icons.cpp).
+qt_add_resources(kdepends "kdepends_icon"
+	PREFIX "/icons"
+	BASE "icons"
+	FILES icons/sc-apps-kdepends.svg
+)
+
 # KDECompilerSettings compiles with -fno-exceptions. The analysis tasks run on
 # a thread pool and must not let an unexpected exception (a std::bad_alloc from
 # a huge file, say) cross a thread boundary, so they wrap their work in
@@ -57,3 +69,4 @@ target_include_directories(kdepends PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 install(TARGETS kdepends ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 install(PROGRAMS kdepends.desktop DESTINATION ${KDE_INSTALL_APPDIR})
+ecm_install_icons(ICONS icons/sc-apps-kdepends.svg DESTINATION ${KDE_INSTALL_ICONDIR})

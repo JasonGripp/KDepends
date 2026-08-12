@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Jason Gripp
+# Licensed under the MIT License.
+
 cmake_minimum_required(VERSION 3.16)
 
 project(kdepends VERSION 1.0.0 LANGUAGES CXX)
@@ -12,6 +15,7 @@ include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 include(ECMSetupVersion)
+include(ECMInstallIcons)
 include(FeatureSummary)
 
 set(CMAKE_CXX_STANDARD 20)
