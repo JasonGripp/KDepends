@@ -56,7 +56,7 @@ QString CanonicalOrOriginal(QString const& rsPath)
 }
 } //namespace
 
-CMainWindow::CMainWindow(QWidget* const pParent)
+CMainWindow::CMainWindow(QWidget* pParent)
 : KXmlGuiWindow(pParent)
 {
 	// Deliberately unparented: the unique_ptr owns it, and it must outlive
@@ -279,7 +279,7 @@ QSize CMainWindow::sizeHint() const
 	return preferred.boundedTo(pScreen->availableGeometry().size() * 0.9);
 }
 
-void CMainWindow::dragEnterEvent(QDragEnterEvent* const pEvent)
+void CMainWindow::dragEnterEvent(QDragEnterEvent* pEvent)
 {
 	if (pEvent == nullptr)
 		return;
@@ -298,7 +298,7 @@ void CMainWindow::dragEnterEvent(QDragEnterEvent* const pEvent)
 	}
 }
 
-void CMainWindow::dropEvent(QDropEvent* const pEvent)
+void CMainWindow::dropEvent(QDropEvent* pEvent)
 {
 	if (pEvent == nullptr)
 		return;
@@ -322,7 +322,7 @@ void CMainWindow::dropEvent(QDropEvent* const pEvent)
 	OpenFiles(vPaths);
 }
 
-void CMainWindow::closeEvent(QCloseEvent* const pEvent)
+void CMainWindow::closeEvent(QCloseEvent* pEvent)
 {
 	writeSettings();
 
@@ -359,7 +359,7 @@ void CMainWindow::closeCurrentTab()
 	closeTab(m_pTabWidget->currentIndex());
 }
 
-void CMainWindow::closeTab(int const iIndex)
+void CMainWindow::closeTab(int iIndex)
 {
 	CModuleTab* const pTab = tabAt(iIndex);
 	if (pTab == nullptr)
@@ -376,7 +376,7 @@ void CMainWindow::closeTab(int const iIndex)
 	updateWindowTitle();
 }
 
-void CMainWindow::currentTabChanged(int const iIndex)
+void CMainWindow::currentTabChanged(int iIndex)
 {
 	Q_UNUSED(iIndex)
 
@@ -402,7 +402,7 @@ void CMainWindow::reanalyzeCurrentTab()
 	OpenFile(sPath);
 }
 
-void CMainWindow::demangleToggled(bool const bEnabled)
+void CMainWindow::demangleToggled(bool bEnabled)
 {
 	m_bDemangle = bEnabled;
 
@@ -423,7 +423,7 @@ void CMainWindow::tabOpenFileRequested(QString const& rsPath)
 	OpenFile(rsPath);
 }
 
-void CMainWindow::tabBusyChanged(bool const bBusy)
+void CMainWindow::tabBusyChanged(bool bBusy)
 {
 	CModuleTab const* const pSender = qobject_cast<CModuleTab*>(sender());
 	if (pSender == nullptr)
@@ -540,7 +540,7 @@ CModuleTab* CMainWindow::currentTab() const
 	return tabAt(m_pTabWidget->currentIndex());
 }
 
-CModuleTab* CMainWindow::tabAt(int const iIndex) const
+CModuleTab* CMainWindow::tabAt(int iIndex) const
 {
 	if (iIndex < 0 || iIndex >= m_pTabWidget->count())
 		return nullptr;
@@ -564,13 +564,13 @@ CModuleTab* CMainWindow::findTabForPath(QString const& rsPath) const
 	return nullptr;
 }
 
-void CMainWindow::connectTab(CModuleTab* const pTab)
+void CMainWindow::connectTab(CModuleTab* pTab)
 {
 	connect(pTab, &CModuleTab::OpenFileRequested, this, &CMainWindow::tabOpenFileRequested);
 	connect(pTab, &CModuleTab::BusyChanged, this, &CMainWindow::tabBusyChanged);
 	connect(pTab, &CModuleTab::TitleChanged, this, &CMainWindow::tabTitleChanged);
 	connect(pTab, &CModuleTab::StatusMessage, this, &CMainWindow::tabStatusMessage);
-	connect(pTab, &CModuleTab::DemangleToggleRequested, this, [this](bool const bEnabled)
+	connect(pTab, &CModuleTab::DemangleToggleRequested, this, [this](bool bEnabled)
 		{ m_pDemangleAction->setChecked(bEnabled); });
 }
 

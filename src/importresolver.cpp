@@ -17,7 +17,7 @@ CImportResolver::CImportResolver(SModuleClosure closure)
 	buildExportIndex();
 }
 
-bool CImportResolver::ResolveModule(std::size_t const uModule, SImportResolution& rOutResolution)
+bool CImportResolver::ResolveModule(std::size_t uModule, SImportResolution& rOutResolution)
 {
 	rOutResolution = SImportResolution();
 	rOutResolution.uModule = uModule;
@@ -60,7 +60,7 @@ bool CImportResolver::ResolveModule(std::size_t const uModule, SImportResolution
 	return true;
 }
 
-bool CImportResolver::ResolveSymbol(std::string const& rsName, std::string const& rsVersion, std::size_t const uRequestingModule, std::size_t& ruOutProviderModule) const
+bool CImportResolver::ResolveSymbol(std::string const& rsName, std::string const& rsVersion, std::size_t uRequestingModule, std::size_t& ruOutProviderModule) const
 {
 	SImportSymbol import;
 	import.sName = rsName;
@@ -154,7 +154,7 @@ void CImportResolver::buildExportIndex()
 	m_bIndexBuilt = true;
 }
 
-bool CImportResolver::findProvider(SImportSymbol const& rImport, std::size_t const uRequestingModule, std::size_t& ruOutProviderModule) const
+bool CImportResolver::findProvider(SImportSymbol const& rImport, std::size_t uRequestingModule, std::size_t& ruOutProviderModule) const
 {
 	ruOutProviderModule = g_uInvalidIndex;
 
@@ -173,7 +173,7 @@ bool CImportResolver::findProvider(SImportSymbol const& rImport, std::size_t con
 		bSymbolic = (rRequester.uDynamicFlags & static_cast<std::uint64_t>(EDynamicFlag::Symbolic)) != 0;
 	}
 
-	auto const Scan = [&](bool const bOwnModuleOnly, std::size_t& ruOutModule) -> bool
+	auto const Scan = [&](bool bOwnModuleOnly, std::size_t& ruOutModule) -> bool
 	{
 		std::size_t uFallbackModule = g_uInvalidIndex;
 
@@ -236,7 +236,7 @@ bool CImportResolver::symbolMatches(SImportSymbol const& rImport, SExportSymbol 
 	return rExport.sVersion == rImport.sVersion;
 }
 
-ESymbolStatus CImportResolver::statusFor(SImportSymbol const& rImport, bool const bFound)
+ESymbolStatus CImportResolver::statusFor(SImportSymbol const& rImport, bool bFound)
 {
 	if (bFound)
 		return ESymbolStatus::Resolved;

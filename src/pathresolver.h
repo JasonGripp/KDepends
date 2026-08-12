@@ -58,20 +58,20 @@ private:
 
 public:
 	CPathResolver();
-	explicit CPathResolver(CLdCache const* const pCache);
+	explicit CPathResolver(CLdCache const* pCache);
 
 	bool Resolve(SResolveRequest const& rRequest, SResolveResult& rOutResult) const;
 	std::vector<std::string> ExpandSearchList(std::vector<std::string> const& rvEntries, SModuleInfo const& rRequester) const;
-	std::vector<std::string> const& DefaultPaths(EElfClass const eClass) const;
+	std::vector<std::string> const& DefaultPaths(EElfClass eClass) const;
 	std::vector<std::string> const& LdLibraryPath() const;
 
 	static bool IsCompatible(SElfSniff const& rSniff, SModuleInfo const& rRequester);
-	static std::string ExpandDynamicTokens(std::string_view const sEntry, std::string_view const sOriginDirectory, EElfClass const eClass, std::string_view const sPlatform);
-	static std::vector<std::string> SplitPathList(std::string_view const sValue);
+	static std::string ExpandDynamicTokens(std::string_view sEntry, std::string_view sOriginDirectory, EElfClass eClass, std::string_view sPlatform);
+	static std::vector<std::string> SplitPathList(std::string_view sValue);
 
 private:
-	bool searchDirectories(std::vector<std::string> const& rvDirectories, SResolveRequest const& rRequest, ESearchSource const eSource, SResolveResult& rOutResult) const;
-	bool tryCandidate(std::string const& rsCandidatePath, SResolveRequest const& rRequest, ESearchSource const eSource, SResolveResult& rOutResult) const;
+	bool searchDirectories(std::vector<std::string> const& rvDirectories, SResolveRequest const& rRequest, ESearchSource eSource, SResolveResult& rOutResult) const;
+	bool tryCandidate(std::string const& rsCandidatePath, SResolveRequest const& rRequest, ESearchSource eSource, SResolveResult& rOutResult) const;
 	bool searchCache(SResolveRequest const& rRequest, SResolveResult& rOutResult) const;
 	std::string originDirectory(SModuleInfo const& rRequester) const;
 };

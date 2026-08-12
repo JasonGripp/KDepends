@@ -90,7 +90,7 @@ public:
 
 private:
 	bool parseOldFormat(CBinaryReader& rReader, std::size_t& ruOutEndOffset);
-	bool parseNewFormat(CBinaryReader& rReader, std::size_t const uBaseOffset);
-	bool addEntry(std::string sName, std::string sPath, std::int32_t const iFlags, std::uint32_t const uOsVersion, std::uint64_t const uHwcap);
+	bool parseNewFormat(CBinaryReader& rReader, std::size_t uBaseOffset);
+	bool addEntry(std::string sName, std::string sPath, std::int32_t iFlags, std::uint32_t uOsVersion, std::uint64_t uHwcap);
 	void buildIndex();
 };

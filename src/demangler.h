@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 // Cheap pre-filter so C symbols never reach the ABI call.
-bool IsMangledName(std::string_view const sName);
+bool IsMangledName(std::string_view sName);
 
 // Calls abi::__cxa_demangle directly; returns rsName unchanged when the name
 // is not mangled or the call fails. Never throws.
@@ -33,7 +33,7 @@ public:
 	static CDemangler& Instance();
 
 	std::string Demangle(std::string const& rsName);
-	std::string DemangleIf(std::string const& rsName, bool const bEnabled);
+	std::string DemangleIf(std::string const& rsName, bool bEnabled);
 	void Clear();
 	std::size_t CacheSize() const;
 	void QueryStatistics(std::size_t& ruOutHits, std::size_t& ruOutMisses) const;

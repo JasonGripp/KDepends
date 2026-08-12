@@ -38,15 +38,15 @@ private:
 	bool m_bFirstPopulation = true;
 
 public:
-	explicit CFilteredTable(QWidget* const pParent = nullptr);
+	explicit CFilteredTable(QWidget* pParent = nullptr);
 	~CFilteredTable() override;
 
-	void SetSourceModel(QAbstractItemModel* const pModel);
+	void SetSourceModel(QAbstractItemModel* pModel);
 	QAbstractItemModel* SourceModel() const;
 	QTableView* View() const;
 	QSortFilterProxyModel* Proxy() const;
 
-	void SetFilterColumn(int const iColumn);
+	void SetFilterColumn(int iColumn);
 	void SetFilterPlaceholder(QString const& rsText);
 	void SetFilterLabel(QString const& rsText);
 	QString FilterText() const;
@@ -55,7 +55,7 @@ public:
 	void FocusFilter();
 
 	bool IsFilterVisible() const;
-	void SetFilterVisible(bool const bVisible);
+	void SetFilterVisible(bool bVisible);
 	void ShowFilter();
 
 	int VisibleRowCount() const;
@@ -66,11 +66,11 @@ public:
 	void CopySelection() const;
 	void SelectAllRows();
 	void ResizeColumnsToContents();
-	void SetAutoResizeColumns(bool const bEnabled);
+	void SetAutoResizeColumns(bool bEnabled);
 
 Q_SIGNALS:
 
-	void ContextMenuRequested(QMenu* const pMenu, QModelIndex const& rSourceIndex);
+	void ContextMenuRequested(QMenu* pMenu, QModelIndex const& rSourceIndex);
 	void SelectionChanged(QModelIndex const& rSourceIndex);
 	void Activated(QModelIndex const& rSourceIndex);
 	void FilterChanged(QString const& rsText);

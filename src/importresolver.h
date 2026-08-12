@@ -43,8 +43,8 @@ private:
 public:
 	explicit CImportResolver(SModuleClosure closure);
 
-	bool ResolveModule(std::size_t const uModule, SImportResolution& rOutResolution);
-	bool ResolveSymbol(std::string const& rsName, std::string const& rsVersion, std::size_t const uRequestingModule, std::size_t& ruOutProviderModule) const;
+	bool ResolveModule(std::size_t uModule, SImportResolution& rOutResolution);
+	bool ResolveSymbol(std::string const& rsName, std::string const& rsVersion, std::size_t uRequestingModule, std::size_t& ruOutProviderModule) const;
 	std::vector<std::size_t> const& SearchOrder() const;
 	SModuleClosure const& Closure() const;
 	std::size_t IndexedSymbolCount() const;
@@ -52,8 +52,8 @@ public:
 private:
 	void buildSearchOrder();
 	void buildExportIndex();
-	bool findProvider(SImportSymbol const& rImport, std::size_t const uRequestingModule, std::size_t& ruOutProviderModule) const;
+	bool findProvider(SImportSymbol const& rImport, std::size_t uRequestingModule, std::size_t& ruOutProviderModule) const;
 
 	static bool symbolMatches(SImportSymbol const& rImport, SExportSymbol const& rExport);
-	static ESymbolStatus statusFor(SImportSymbol const& rImport, bool const bFound);
+	static ESymbolStatus statusFor(SImportSymbol const& rImport, bool bFound);
 };

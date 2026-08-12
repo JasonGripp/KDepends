@@ -16,7 +16,7 @@
 #include <utility>
 #include <vector>
 
-CExportsModel::CExportsModel(QObject* const pParent)
+CExportsModel::CExportsModel(QObject* pParent)
 : QAbstractTableModel(pParent)
 {
 }
@@ -25,7 +25,7 @@ CExportsModel::~CExportsModel()
 {
 }
 
-void CExportsModel::SetExports(std::size_t const uModule, std::vector<SExportSymbol> vExports, EElfClass const eClass)
+void CExportsModel::SetExports(std::size_t uModule, std::vector<SExportSymbol> vExports, EElfClass eClass)
 {
 	beginResetModel();
 
@@ -46,7 +46,7 @@ void CExportsModel::Clear()
 	endResetModel();
 }
 
-void CExportsModel::SetDemangleEnabled(bool const bEnabled)
+void CExportsModel::SetDemangleEnabled(bool bEnabled)
 {
 	if (m_bDemangle == bEnabled)
 		return;
@@ -71,7 +71,7 @@ std::size_t CExportsModel::ModuleIndex() const
 	return m_uModule;
 }
 
-SExportSymbol const* CExportsModel::SymbolAt(int const iRow) const
+SExportSymbol const* CExportsModel::SymbolAt(int iRow) const
 {
 	if (iRow < 0 || static_cast<std::size_t>(iRow) >= m_vExports.size())
 		return nullptr;
@@ -79,7 +79,7 @@ SExportSymbol const* CExportsModel::SymbolAt(int const iRow) const
 	return &m_vExports[static_cast<std::size_t>(iRow)];
 }
 
-QString CExportsModel::RawSymbolNameAt(int const iRow) const
+QString CExportsModel::RawSymbolNameAt(int iRow) const
 {
 	SExportSymbol const* const pSymbol = SymbolAt(iRow);
 	if (pSymbol == nullptr)
@@ -88,7 +88,7 @@ QString CExportsModel::RawSymbolNameAt(int const iRow) const
 	return QString::fromStdString(pSymbol->sName);
 }
 
-QString CExportsModel::DisplaySymbolNameAt(int const iRow) const
+QString CExportsModel::DisplaySymbolNameAt(int iRow) const
 {
 	SExportSymbol const* const pSymbol = SymbolAt(iRow);
 	if (pSymbol == nullptr)
@@ -249,7 +249,7 @@ QString CExportsModel::addressText(SExportSymbol const& rSymbol) const
 	return QStringLiteral("0x%1").arg(rSymbol.uAddress, iWidth, 16, QLatin1Char('0'));
 }
 
-QVariant CExportsModel::sortKey(SExportSymbol const& rSymbol, EColumn const eColumn) const
+QVariant CExportsModel::sortKey(SExportSymbol const& rSymbol, EColumn eColumn) const
 {
 	switch (eColumn)
 	{

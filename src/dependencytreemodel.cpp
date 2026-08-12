@@ -16,7 +16,7 @@
 #include <cstddef>
 #include <vector>
 
-CDependencyTreeModel::CDependencyTreeModel(QObject* const pParent)
+CDependencyTreeModel::CDependencyTreeModel(QObject* pParent)
 : QAbstractItemModel(pParent)
 {
 }
@@ -115,7 +115,7 @@ void CDependencyTreeModel::ApplyExpansion(SExpandOutcome const& rOutcome)
 		Q_EMIT dataChanged(parentIndex, parentIndex);
 }
 
-void CDependencyTreeModel::ApplyModuleUpdate(std::size_t const uModule, SModuleInfo const& rInfo)
+void CDependencyTreeModel::ApplyModuleUpdate(std::size_t uModule, SModuleInfo const& rInfo)
 {
 	QString const sSoname = QString::fromStdString(rInfo.sSoname);
 
@@ -171,7 +171,7 @@ QString CDependencyTreeModel::NeededNameAt(QModelIndex const& rIndex) const
 	return m_vNodes[uNode].sNeededName;
 }
 
-QModelIndex CDependencyTreeModel::IndexForNode(std::size_t const uNode) const
+QModelIndex CDependencyTreeModel::IndexForNode(std::size_t uNode) const
 {
 	if (uNode >= m_vNodes.size())
 		return QModelIndex();
@@ -181,7 +181,7 @@ QModelIndex CDependencyTreeModel::IndexForNode(std::size_t const uNode) const
 	return createIndex(m_vNodes[uNode].uRowInParent, 0, static_cast<quintptr>(uNode));
 }
 
-QModelIndex CDependencyTreeModel::FirstIndexForModule(std::size_t const uModule) const
+QModelIndex CDependencyTreeModel::FirstIndexForModule(std::size_t uModule) const
 {
 	if (uModule == g_uInvalidIndex)
 		return QModelIndex();
@@ -399,7 +399,7 @@ std::size_t CDependencyTreeModel::nodeFromIndex(QModelIndex const& rIndex) const
 	return uNode;
 }
 
-void CDependencyTreeModel::appendChildren(std::size_t const uParent, std::vector<SChildNodeInfo> const& rvChildren)
+void CDependencyTreeModel::appendChildren(std::size_t uParent, std::vector<SChildNodeInfo> const& rvChildren)
 {
 	if (uParent >= m_vNodes.size())
 		return;

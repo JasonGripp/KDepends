@@ -36,21 +36,21 @@ private:
 	bool m_bResolved = false;
 
 public:
-	explicit CImportsModel(QObject* const pParent = nullptr);
+	explicit CImportsModel(QObject* pParent = nullptr);
 	~CImportsModel() override;
 
-	void SetImports(std::size_t const uModule, std::vector<SImportSymbol> vImports, bool const bResolved);
-	void ApplyResolution(std::size_t const uModule, std::vector<SImportSymbol> vImports);
+	void SetImports(std::size_t uModule, std::vector<SImportSymbol> vImports, bool bResolved);
+	void ApplyResolution(std::size_t uModule, std::vector<SImportSymbol> vImports);
 	void Clear();
 
-	void SetDemangleEnabled(bool const bEnabled);
+	void SetDemangleEnabled(bool bEnabled);
 	bool IsDemangleEnabled() const;
 
 	std::size_t ModuleIndex() const;
-	SImportSymbol const* SymbolAt(int const iRow) const;
-	QString RawSymbolNameAt(int const iRow) const;
-	QString DisplaySymbolNameAt(int const iRow) const;
-	std::size_t ProviderModuleAt(int const iRow) const;
+	SImportSymbol const* SymbolAt(int iRow) const;
+	QString RawSymbolNameAt(int iRow) const;
+	QString DisplaySymbolNameAt(int iRow) const;
+	std::size_t ProviderModuleAt(int iRow) const;
 	void QueryCounts(std::size_t& ruOutTotal, std::size_t& ruOutUnresolved, std::size_t& ruOutWeak) const;
 
 	int rowCount(QModelIndex const& rParent = QModelIndex()) const override;
@@ -62,5 +62,5 @@ public:
 private:
 	QString symbolText(SImportSymbol const& rSymbol) const;
 	QString providerText(SImportSymbol const& rSymbol) const;
-	QVariant sortKey(SImportSymbol const& rSymbol, EColumn const eColumn) const;
+	QVariant sortKey(SImportSymbol const& rSymbol, EColumn eColumn) const;
 };

@@ -16,7 +16,7 @@ private:
 	char* m_pcBuffer = nullptr;
 
 public:
-	explicit CFreeGuard(char* const pcBuffer)
+	explicit CFreeGuard(char* pcBuffer)
 	: m_pcBuffer(pcBuffer)
 	{
 	}
@@ -32,7 +32,7 @@ public:
 };
 } //namespace
 
-bool IsMangledName(std::string_view const sName)
+bool IsMangledName(std::string_view sName)
 {
 	if (sName.size() <= 2)
 		return false;
@@ -75,7 +75,7 @@ std::string CDemangler::Demangle(std::string const& rsName)
 	return lookupOrInsert(rsName);
 }
 
-std::string CDemangler::DemangleIf(std::string const& rsName, bool const bEnabled)
+std::string CDemangler::DemangleIf(std::string const& rsName, bool bEnabled)
 {
 	if (!bEnabled)
 		return rsName;

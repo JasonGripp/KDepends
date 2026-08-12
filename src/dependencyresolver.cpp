@@ -13,7 +13,7 @@
 #include <vector>
 
 namespace {
-bool IsLeafStatus(EModuleStatus const eStatus)
+bool IsLeafStatus(EModuleStatus eStatus)
 {
 	return eStatus == EModuleStatus::Missing
 		|| eStatus == EModuleStatus::Duplicate
@@ -26,7 +26,7 @@ CDependencyResolver::CDependencyResolver()
 {
 }
 
-CDependencyResolver::CDependencyResolver(CLdCache const* const pCache)
+CDependencyResolver::CDependencyResolver(CLdCache const* pCache)
 : m_resolver(pCache)
 {
 }
@@ -96,7 +96,7 @@ bool CDependencyResolver::AnalyzeRoot(std::string const& rsPath, SRootResult& rO
 	return true;
 }
 
-bool CDependencyResolver::ExpandNode(std::size_t const uNode, SExpandOutcome& rOutOutcome)
+bool CDependencyResolver::ExpandNode(std::size_t uNode, SExpandOutcome& rOutOutcome)
 {
 	rOutOutcome = SExpandOutcome();
 	rOutOutcome.uNode = uNode;
@@ -157,7 +157,7 @@ bool CDependencyResolver::ExpandNode(std::size_t const uNode, SExpandOutcome& rO
 	return bResult;
 }
 
-bool CDependencyResolver::expandClaimedNode(std::size_t const uNode, SModuleInfo const& rInfo, std::vector<std::string> const& rvRpathChain, SExpandOutcome& rOutOutcome)
+bool CDependencyResolver::expandClaimedNode(std::size_t uNode, SModuleInfo const& rInfo, std::vector<std::string> const& rvRpathChain, SExpandOutcome& rOutOutcome)
 {
 	rOutOutcome.uNode = uNode;
 
@@ -198,7 +198,7 @@ bool CDependencyResolver::NextUnexpandedNode(std::size_t& ruOutNode) const
 	return false;
 }
 
-void CDependencyResolver::CollectUnexpandedNodes(std::vector<std::size_t>& rvOutNodes, std::size_t const uMaxCount) const
+void CDependencyResolver::CollectUnexpandedNodes(std::vector<std::size_t>& rvOutNodes, std::size_t uMaxCount) const
 {
 	rvOutNodes.clear();
 	if (uMaxCount == 0)
@@ -259,7 +259,7 @@ std::size_t CDependencyResolver::ModuleCount() const
 	return m_closure.vModules.size();
 }
 
-bool CDependencyResolver::ModuleSnapshot(std::size_t const uModule, SModuleInfo& rOutInfo) const
+bool CDependencyResolver::ModuleSnapshot(std::size_t uModule, SModuleInfo& rOutInfo) const
 {
 	std::lock_guard<std::mutex> const lock(m_mutex);
 
@@ -270,7 +270,7 @@ bool CDependencyResolver::ModuleSnapshot(std::size_t const uModule, SModuleInfo&
 	return true;
 }
 
-bool CDependencyResolver::NodeSnapshot(std::size_t const uNode, SDependencyNode& rOutNode) const
+bool CDependencyResolver::NodeSnapshot(std::size_t uNode, SDependencyNode& rOutNode) const
 {
 	std::lock_guard<std::mutex> const lock(m_mutex);
 
@@ -289,7 +289,7 @@ bool CDependencyResolver::ClosureSnapshot(SModuleClosure& rOutClosure) const
 	return true;
 }
 
-bool CDependencyResolver::SetModuleImports(std::size_t const uModule, std::vector<SImportSymbol> vImports)
+bool CDependencyResolver::SetModuleImports(std::size_t uModule, std::vector<SImportSymbol> vImports)
 {
 	std::lock_guard<std::mutex> const lock(m_mutex);
 
@@ -308,7 +308,7 @@ std::string CDependencyResolver::RootPath() const
 	return m_closure.sRootPath;
 }
 
-bool CDependencyResolver::claimNode(std::size_t const uNode, std::string& rsOutPath, std::size_t& ruOutModule, std::vector<std::string>& rvOutRpathChain, bool& rbOutAlreadyDone)
+bool CDependencyResolver::claimNode(std::size_t uNode, std::string& rsOutPath, std::size_t& ruOutModule, std::vector<std::string>& rvOutRpathChain, bool& rbOutAlreadyDone)
 {
 	rsOutPath.clear();
 	ruOutModule = g_uInvalidIndex;
@@ -379,7 +379,7 @@ bool CDependencyResolver::resolveNeededNames(SModuleInfo const& rRequester, std:
 	return rvOutResults.size() == rRequester.vNeeded.size();
 }
 
-void CDependencyResolver::commitExpansion(std::size_t const uNode, SModuleInfo const& rInfo, std::vector<SResolveResult> const& rvResults, std::vector<std::string> const& rvRpathChain, SExpandOutcome& rOutOutcome)
+void CDependencyResolver::commitExpansion(std::size_t uNode, SModuleInfo const& rInfo, std::vector<SResolveResult> const& rvResults, std::vector<std::string> const& rvRpathChain, SExpandOutcome& rOutOutcome)
 {
 	std::lock_guard<std::mutex> const lock(m_mutex);
 

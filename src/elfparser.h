@@ -69,9 +69,9 @@ public:
 	static bool ParseFile(std::string const& rsPath, SModuleInfo& rOutInfo, std::string& rsOutError);
 	static bool SniffFile(std::string const& rsPath, SElfSniff& rOutSniff);
 
-	static std::string MachineName(EElfMachine const eMachine);
-	static std::string ClassName(EElfClass const eClass);
-	static std::string TypeName(EElfType const eType, bool const bPositionIndependent);
+	static std::string MachineName(EElfMachine eMachine);
+	static std::string ClassName(EElfClass eClass);
+	static std::string TypeName(EElfType eType, bool bPositionIndependent);
 
 private:
 	bool parse(std::string const& rsPath);
@@ -83,13 +83,13 @@ private:
 	bool parseDynamicEntries();
 	bool parseVersionTables();
 	bool parseDynamicSymbols();
-	void classifySymbol(SElfSymbol const& rSymbol, std::string_view const sName, std::uint16_t const uVersionIndex);
+	void classifySymbol(SElfSymbol const& rSymbol, std::string_view sName, std::uint16_t uVersionIndex);
 	bool finalize(std::string const& rsPath);
 
-	std::uint64_t virtualToFileOffset(std::uint64_t const uVirtualAddress) const;
+	std::uint64_t virtualToFileOffset(std::uint64_t uVirtualAddress) const;
 	std::uint64_t deriveSymbolCount() const;
-	std::string_view dynamicString(std::uint64_t const uStringOffset) const;
+	std::string_view dynamicString(std::uint64_t uStringOffset) const;
 	bool fail(std::string sMessage);
 
-	static std::vector<std::string> splitSearchList(std::string_view const sValue);
+	static std::vector<std::string> splitSearchList(std::string_view sValue);
 };

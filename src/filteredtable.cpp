@@ -36,7 +36,7 @@ namespace {
 constexpr int g_iMinimumAutoColumnWidth = 120;
 } //namespace
 
-CFilteredTable::CFilteredTable(QWidget* const pParent)
+CFilteredTable::CFilteredTable(QWidget* pParent)
 : QWidget(pParent)
 {
 	buildUi();
@@ -138,7 +138,7 @@ void CFilteredTable::buildShortcuts()
 		{ SetFilterVisible(false); });
 }
 
-void CFilteredTable::SetSourceModel(QAbstractItemModel* const pModel)
+void CFilteredTable::SetSourceModel(QAbstractItemModel* pModel)
 {
 	QAbstractItemModel* const pPrevious = m_pProxy->sourceModel();
 	if (pPrevious != nullptr)
@@ -174,7 +174,7 @@ QSortFilterProxyModel* CFilteredTable::Proxy() const
 	return m_pProxy;
 }
 
-void CFilteredTable::SetFilterColumn(int const iColumn)
+void CFilteredTable::SetFilterColumn(int iColumn)
 {
 	m_iFilterColumn = iColumn;
 	m_pProxy->setFilterKeyColumn(iColumn);
@@ -218,7 +218,7 @@ bool CFilteredTable::IsFilterVisible() const
 	return m_pFilterRow->isVisibleTo(this);
 }
 
-void CFilteredTable::SetFilterVisible(bool const bVisible)
+void CFilteredTable::SetFilterVisible(bool bVisible)
 {
 	m_pCloseFilterShortcut->setEnabled(bVisible);
 
@@ -321,7 +321,7 @@ void CFilteredTable::ResizeColumnsToContents()
 	}
 }
 
-void CFilteredTable::SetAutoResizeColumns(bool const bEnabled)
+void CFilteredTable::SetAutoResizeColumns(bool bEnabled)
 {
 	m_bAutoResize = bEnabled;
 }

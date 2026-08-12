@@ -39,19 +39,19 @@ private:
 	bool m_b64Bit = true;
 
 public:
-	explicit CExportsModel(QObject* const pParent = nullptr);
+	explicit CExportsModel(QObject* pParent = nullptr);
 	~CExportsModel() override;
 
-	void SetExports(std::size_t const uModule, std::vector<SExportSymbol> vExports, EElfClass const eClass);
+	void SetExports(std::size_t uModule, std::vector<SExportSymbol> vExports, EElfClass eClass);
 	void Clear();
 
-	void SetDemangleEnabled(bool const bEnabled);
+	void SetDemangleEnabled(bool bEnabled);
 	bool IsDemangleEnabled() const;
 
 	std::size_t ModuleIndex() const;
-	SExportSymbol const* SymbolAt(int const iRow) const;
-	QString RawSymbolNameAt(int const iRow) const;
-	QString DisplaySymbolNameAt(int const iRow) const;
+	SExportSymbol const* SymbolAt(int iRow) const;
+	QString RawSymbolNameAt(int iRow) const;
+	QString DisplaySymbolNameAt(int iRow) const;
 	std::size_t ExportCount() const;
 
 	int rowCount(QModelIndex const& rParent = QModelIndex()) const override;
@@ -64,5 +64,5 @@ private:
 	QString symbolText(SExportSymbol const& rSymbol) const;
 	QString versionText(SExportSymbol const& rSymbol) const;
 	QString addressText(SExportSymbol const& rSymbol) const;
-	QVariant sortKey(SExportSymbol const& rSymbol, EColumn const eColumn) const;
+	QVariant sortKey(SExportSymbol const& rSymbol, EColumn eColumn) const;
 };

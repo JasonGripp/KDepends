@@ -52,19 +52,19 @@ private:
 	std::unordered_map<std::size_t, int> m_mapModuleToRow;
 
 public:
-	explicit CModulesModel(QObject* const pParent = nullptr);
+	explicit CModulesModel(QObject* pParent = nullptr);
 	~CModulesModel() override;
 
 	void Reset();
-	void AddModule(std::size_t const uModule, SModuleInfo const& rInfo, EModuleStatus const eStatus);
+	void AddModule(std::size_t uModule, SModuleInfo const& rInfo, EModuleStatus eStatus);
 	void AddModules(std::vector<std::size_t> const& rvModules, std::vector<SModuleInfo> const& rvInfos);
-	void UpdateModule(std::size_t const uModule, SModuleInfo const& rInfo);
-	void SetModuleStatus(std::size_t const uModule, EModuleStatus const eStatus, QString const& rsError);
+	void UpdateModule(std::size_t uModule, SModuleInfo const& rInfo);
+	void SetModuleStatus(std::size_t uModule, EModuleStatus eStatus, QString const& rsError);
 
-	int RowForModule(std::size_t const uModule) const;
-	std::size_t ModuleAt(int const iRow) const;
-	QString PathAt(int const iRow) const;
-	SModuleInfo const* InfoAt(int const iRow) const;
+	int RowForModule(std::size_t uModule) const;
+	std::size_t ModuleAt(int iRow) const;
+	QString PathAt(int iRow) const;
+	SModuleInfo const* InfoAt(int iRow) const;
 	int ModuleCount() const;
 	int MissingCount() const;
 
@@ -75,7 +75,7 @@ public:
 	Qt::ItemFlags flags(QModelIndex const& rIndex) const override;
 
 private:
-	QVariant sortKey(SModuleRow const& rRow, EColumn const eColumn) const;
+	QVariant sortKey(SModuleRow const& rRow, EColumn eColumn) const;
 	QString runPathText(SModuleInfo const& rInfo) const;
 	QString rowTooltip(SModuleRow const& rRow) const;
 };

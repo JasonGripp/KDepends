@@ -69,45 +69,45 @@ private:
 	SessionId m_uNextSessionId = 1;
 
 public:
-	explicit CAnalysisEngine(QObject* const pParent = nullptr);
+	explicit CAnalysisEngine(QObject* pParent = nullptr);
 	~CAnalysisEngine() override;
 
 	SessionId CreateSession(QString const& rsRootPath);
-	void CancelSession(SessionId const uSession);
+	void CancelSession(SessionId uSession);
 	void CancelAll();
 
-	void RequestRoot(SessionId const uSession);
-	void RequestExpand(SessionId const uSession, std::size_t const uNode);
-	void RequestFullClosure(SessionId const uSession);
-	void RequestImports(SessionId const uSession, std::size_t const uModule);
+	void RequestRoot(SessionId uSession);
+	void RequestExpand(SessionId uSession, std::size_t uNode);
+	void RequestFullClosure(SessionId uSession);
+	void RequestImports(SessionId uSession, std::size_t uModule);
 
-	bool IsBusy(SessionId const uSession) const;
-	SEngineStatus QueryStatus(SessionId const uSession) const;
+	bool IsBusy(SessionId uSession) const;
+	SEngineStatus QueryStatus(SessionId uSession) const;
 	int MaxThreadCount() const;
 
 Q_SIGNALS:
 
-	void RootReady(SessionId const uSession, SRootResult const& rResult);
-	void NodeExpanded(SessionId const uSession, SExpandOutcome const& rOutcome);
-	void ModuleDiscovered(SessionId const uSession, std::size_t const uModule, SModuleInfo const& rInfo);
-	void ModuleUpdated(SessionId const uSession, SModuleUpdate const& rUpdate);
-	void ImportsResolved(SessionId const uSession, SImportResolution const& rResolution);
-	void ClosureComplete(SessionId const uSession);
-	void StatusChanged(SessionId const uSession, SEngineStatus const& rStatus);
-	void AnalysisFailed(SessionId const uSession, QString const& rsMessage);
+	void RootReady(SessionId uSession, SRootResult const& rResult);
+	void NodeExpanded(SessionId uSession, SExpandOutcome const& rOutcome);
+	void ModuleDiscovered(SessionId uSession, std::size_t uModule, SModuleInfo const& rInfo);
+	void ModuleUpdated(SessionId uSession, SModuleUpdate const& rUpdate);
+	void ImportsResolved(SessionId uSession, SImportResolution const& rResolution);
+	void ClosureComplete(SessionId uSession);
+	void StatusChanged(SessionId uSession, SEngineStatus const& rStatus);
+	void AnalysisFailed(SessionId uSession, QString const& rsMessage);
 
 private Q_SLOTS:
 
-	void deliverRoot(SessionId const uSession, SRootResult const rResult);
-	void deliverExpansion(SessionId const uSession, SExpandOutcome const rOutcome);
-	void deliverImports(SessionId const uSession, SImportResolution const rResolution);
-	void deliverStatus(SessionId const uSession);
+	void deliverRoot(SessionId uSession, SRootResult rResult);
+	void deliverExpansion(SessionId uSession, SExpandOutcome rOutcome);
+	void deliverImports(SessionId uSession, SImportResolution rResolution);
+	void deliverStatus(SessionId uSession);
 
 private:
-	std::shared_ptr<SSession> findSession(SessionId const uSession) const;
-	void startTask(std::shared_ptr<SSession> const& rpSession, int const eKind, std::size_t const uIndex);
+	std::shared_ptr<SSession> findSession(SessionId uSession) const;
+	void startTask(std::shared_ptr<SSession> const& rpSession, int eKind, std::size_t uIndex);
 	void pumpClosure(std::shared_ptr<SSession> const& rpSession);
-	void emitStatusThrottled(SessionId const uSession);
+	void emitStatusThrottled(SessionId uSession);
 
 private:
 	friend class CAnalysisTask;

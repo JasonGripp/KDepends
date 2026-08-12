@@ -15,7 +15,7 @@
 #include <utility>
 #include <vector>
 
-CImportsModel::CImportsModel(QObject* const pParent)
+CImportsModel::CImportsModel(QObject* pParent)
 : QAbstractTableModel(pParent)
 {
 }
@@ -24,7 +24,7 @@ CImportsModel::~CImportsModel()
 {
 }
 
-void CImportsModel::SetImports(std::size_t const uModule, std::vector<SImportSymbol> vImports, bool const bResolved)
+void CImportsModel::SetImports(std::size_t uModule, std::vector<SImportSymbol> vImports, bool bResolved)
 {
 	beginResetModel();
 
@@ -35,7 +35,7 @@ void CImportsModel::SetImports(std::size_t const uModule, std::vector<SImportSym
 	endResetModel();
 }
 
-void CImportsModel::ApplyResolution(std::size_t const uModule, std::vector<SImportSymbol> vImports)
+void CImportsModel::ApplyResolution(std::size_t uModule, std::vector<SImportSymbol> vImports)
 {
 	if (uModule != m_uModule)
 		return;
@@ -69,7 +69,7 @@ void CImportsModel::Clear()
 	endResetModel();
 }
 
-void CImportsModel::SetDemangleEnabled(bool const bEnabled)
+void CImportsModel::SetDemangleEnabled(bool bEnabled)
 {
 	if (m_bDemangle == bEnabled)
 		return;
@@ -94,7 +94,7 @@ std::size_t CImportsModel::ModuleIndex() const
 	return m_uModule;
 }
 
-SImportSymbol const* CImportsModel::SymbolAt(int const iRow) const
+SImportSymbol const* CImportsModel::SymbolAt(int iRow) const
 {
 	if (iRow < 0 || static_cast<std::size_t>(iRow) >= m_vImports.size())
 		return nullptr;
@@ -102,7 +102,7 @@ SImportSymbol const* CImportsModel::SymbolAt(int const iRow) const
 	return &m_vImports[static_cast<std::size_t>(iRow)];
 }
 
-QString CImportsModel::RawSymbolNameAt(int const iRow) const
+QString CImportsModel::RawSymbolNameAt(int iRow) const
 {
 	SImportSymbol const* const pSymbol = SymbolAt(iRow);
 	if (pSymbol == nullptr)
@@ -111,7 +111,7 @@ QString CImportsModel::RawSymbolNameAt(int const iRow) const
 	return QString::fromStdString(pSymbol->sName);
 }
 
-QString CImportsModel::DisplaySymbolNameAt(int const iRow) const
+QString CImportsModel::DisplaySymbolNameAt(int iRow) const
 {
 	SImportSymbol const* const pSymbol = SymbolAt(iRow);
 	if (pSymbol == nullptr)
@@ -120,7 +120,7 @@ QString CImportsModel::DisplaySymbolNameAt(int const iRow) const
 	return symbolText(*pSymbol);
 }
 
-std::size_t CImportsModel::ProviderModuleAt(int const iRow) const
+std::size_t CImportsModel::ProviderModuleAt(int iRow) const
 {
 	SImportSymbol const* const pSymbol = SymbolAt(iRow);
 	if (pSymbol == nullptr)
@@ -276,7 +276,7 @@ QString CImportsModel::providerText(SImportSymbol const& rSymbol) const
 	return QString();
 }
 
-QVariant CImportsModel::sortKey(SImportSymbol const& rSymbol, EColumn const eColumn) const
+QVariant CImportsModel::sortKey(SImportSymbol const& rSymbol, EColumn eColumn) const
 {
 	switch (eColumn)
 	{

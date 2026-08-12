@@ -41,7 +41,7 @@ std::string HostPlatform()
 	return std::string(systemName.machine);
 }
 
-bool IsTokenCharacter(char const cCharacter)
+bool IsTokenCharacter(char cCharacter)
 {
 	if (cCharacter >= 'A' && cCharacter <= 'Z')
 		return true;
@@ -58,7 +58,7 @@ CPathResolver::CPathResolver()
 {
 }
 
-CPathResolver::CPathResolver(CLdCache const* const pCache)
+CPathResolver::CPathResolver(CLdCache const* pCache)
 : m_pCache(pCache)
 {
 	char const* const pcLdLibraryPath = std::getenv("LD_LIBRARY_PATH");
@@ -148,7 +148,7 @@ std::vector<std::string> CPathResolver::ExpandSearchList(std::vector<std::string
 	return vExpanded;
 }
 
-std::vector<std::string> const& CPathResolver::DefaultPaths(EElfClass const eClass) const
+std::vector<std::string> const& CPathResolver::DefaultPaths(EElfClass eClass) const
 {
 	if (eClass == EElfClass::Class32)
 		return m_vDefaultPaths32;
@@ -176,7 +176,7 @@ bool CPathResolver::IsCompatible(SElfSniff const& rSniff, SModuleInfo const& rRe
 	return true;
 }
 
-std::string CPathResolver::ExpandDynamicTokens(std::string_view const sEntry, std::string_view const sOriginDirectory, EElfClass const eClass, std::string_view const sPlatform)
+std::string CPathResolver::ExpandDynamicTokens(std::string_view sEntry, std::string_view sOriginDirectory, EElfClass eClass, std::string_view sPlatform)
 {
 	std::string sResult;
 	sResult.reserve(sEntry.size());
@@ -251,7 +251,7 @@ std::string CPathResolver::ExpandDynamicTokens(std::string_view const sEntry, st
 	return sResult;
 }
 
-std::vector<std::string> CPathResolver::SplitPathList(std::string_view const sValue)
+std::vector<std::string> CPathResolver::SplitPathList(std::string_view sValue)
 {
 	std::vector<std::string> vEntries;
 
@@ -275,7 +275,7 @@ std::vector<std::string> CPathResolver::SplitPathList(std::string_view const sVa
 	return vEntries;
 }
 
-bool CPathResolver::searchDirectories(std::vector<std::string> const& rvDirectories, SResolveRequest const& rRequest, ESearchSource const eSource, SResolveResult& rOutResult) const
+bool CPathResolver::searchDirectories(std::vector<std::string> const& rvDirectories, SResolveRequest const& rRequest, ESearchSource eSource, SResolveResult& rOutResult) const
 {
 	for (std::string const& rsDirectory : rvDirectories)
 	{
@@ -294,7 +294,7 @@ bool CPathResolver::searchDirectories(std::vector<std::string> const& rvDirector
 	return false;
 }
 
-bool CPathResolver::tryCandidate(std::string const& rsCandidatePath, SResolveRequest const& rRequest, ESearchSource const eSource, SResolveResult& rOutResult) const
+bool CPathResolver::tryCandidate(std::string const& rsCandidatePath, SResolveRequest const& rRequest, ESearchSource eSource, SResolveResult& rOutResult) const
 {
 	if (!FileExists(rsCandidatePath))
 		return false;

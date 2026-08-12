@@ -17,7 +17,7 @@
 #include <cstddef>
 #include <vector>
 
-CModulesModel::CModulesModel(QObject* const pParent)
+CModulesModel::CModulesModel(QObject* pParent)
 : QAbstractTableModel(pParent)
 {
 }
@@ -36,7 +36,7 @@ void CModulesModel::Reset()
 	endResetModel();
 }
 
-void CModulesModel::AddModule(std::size_t const uModule, SModuleInfo const& rInfo, EModuleStatus const eStatus)
+void CModulesModel::AddModule(std::size_t uModule, SModuleInfo const& rInfo, EModuleStatus eStatus)
 {
 	if (uModule == g_uInvalidIndex)
 		return;
@@ -112,7 +112,7 @@ void CModulesModel::AddModules(std::vector<std::size_t> const& rvModules, std::v
 	endInsertRows();
 }
 
-void CModulesModel::UpdateModule(std::size_t const uModule, SModuleInfo const& rInfo)
+void CModulesModel::UpdateModule(std::size_t uModule, SModuleInfo const& rInfo)
 {
 	auto const itFound = m_mapModuleToRow.find(uModule);
 	if (itFound == m_mapModuleToRow.end())
@@ -129,7 +129,7 @@ void CModulesModel::UpdateModule(std::size_t const uModule, SModuleInfo const& r
 	Q_EMIT dataChanged(index(iRow, 0), index(iRow, static_cast<int>(EColumn::Count) - 1));
 }
 
-void CModulesModel::SetModuleStatus(std::size_t const uModule, EModuleStatus const eStatus, QString const& rsError)
+void CModulesModel::SetModuleStatus(std::size_t uModule, EModuleStatus eStatus, QString const& rsError)
 {
 	auto const itFound = m_mapModuleToRow.find(uModule);
 	if (itFound == m_mapModuleToRow.end())
@@ -146,7 +146,7 @@ void CModulesModel::SetModuleStatus(std::size_t const uModule, EModuleStatus con
 	Q_EMIT dataChanged(index(iRow, 0), index(iRow, static_cast<int>(EColumn::Count) - 1));
 }
 
-int CModulesModel::RowForModule(std::size_t const uModule) const
+int CModulesModel::RowForModule(std::size_t uModule) const
 {
 	auto const itFound = m_mapModuleToRow.find(uModule);
 	if (itFound == m_mapModuleToRow.end())
@@ -155,7 +155,7 @@ int CModulesModel::RowForModule(std::size_t const uModule) const
 	return itFound->second;
 }
 
-std::size_t CModulesModel::ModuleAt(int const iRow) const
+std::size_t CModulesModel::ModuleAt(int iRow) const
 {
 	if (iRow < 0 || static_cast<std::size_t>(iRow) >= m_vRows.size())
 		return g_uInvalidIndex;
@@ -163,7 +163,7 @@ std::size_t CModulesModel::ModuleAt(int const iRow) const
 	return m_vRows[static_cast<std::size_t>(iRow)].uModule;
 }
 
-QString CModulesModel::PathAt(int const iRow) const
+QString CModulesModel::PathAt(int iRow) const
 {
 	SModuleInfo const* const pInfo = InfoAt(iRow);
 	if (pInfo == nullptr)
@@ -172,7 +172,7 @@ QString CModulesModel::PathAt(int const iRow) const
 	return QString::fromStdString(pInfo->sPath);
 }
 
-SModuleInfo const* CModulesModel::InfoAt(int const iRow) const
+SModuleInfo const* CModulesModel::InfoAt(int iRow) const
 {
 	if (iRow < 0 || static_cast<std::size_t>(iRow) >= m_vRows.size())
 		return nullptr;
@@ -347,7 +347,7 @@ Qt::ItemFlags CModulesModel::flags(QModelIndex const& rIndex) const
 	return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-QVariant CModulesModel::sortKey(SModuleRow const& rRow, EColumn const eColumn) const
+QVariant CModulesModel::sortKey(SModuleRow const& rRow, EColumn eColumn) const
 {
 	switch (eColumn)
 	{

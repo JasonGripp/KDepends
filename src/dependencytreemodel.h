@@ -49,20 +49,20 @@ private:
 	QString m_sRootPath;
 
 public:
-	explicit CDependencyTreeModel(QObject* const pParent = nullptr);
+	explicit CDependencyTreeModel(QObject* pParent = nullptr);
 	~CDependencyTreeModel() override;
 
 	void Reset();
 	void ApplyRoot(SRootResult const& rResult);
 	void ApplyExpansion(SExpandOutcome const& rOutcome);
-	void ApplyModuleUpdate(std::size_t const uModule, SModuleInfo const& rInfo);
+	void ApplyModuleUpdate(std::size_t uModule, SModuleInfo const& rInfo);
 
 	std::size_t NodeAt(QModelIndex const& rIndex) const;
 	std::size_t ModuleAt(QModelIndex const& rIndex) const;
 	QString PathAt(QModelIndex const& rIndex) const;
 	QString NeededNameAt(QModelIndex const& rIndex) const;
-	QModelIndex IndexForNode(std::size_t const uNode) const;
-	QModelIndex FirstIndexForModule(std::size_t const uModule) const;
+	QModelIndex IndexForNode(std::size_t uNode) const;
+	QModelIndex FirstIndexForModule(std::size_t uModule) const;
 	bool HasRoot() const;
 	std::size_t NodeCount() const;
 
@@ -79,12 +79,12 @@ public:
 
 Q_SIGNALS:
 
-	void ExpansionNeeded(std::size_t const uNode);
+	void ExpansionNeeded(std::size_t uNode);
 	void RootApplied();
 
 private:
 	std::size_t nodeFromIndex(QModelIndex const& rIndex) const;
-	void appendChildren(std::size_t const uParent, std::vector<SChildNodeInfo> const& rvChildren);
+	void appendChildren(std::size_t uParent, std::vector<SChildNodeInfo> const& rvChildren);
 	QString nodeText(SMirrorNode const& rNode) const;
 	QString nodeTooltip(SMirrorNode const& rNode) const;
 };

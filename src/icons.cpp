@@ -17,7 +17,7 @@
 namespace {
 // QIcon construction is not free and these functions are called once per
 // visible cell per repaint, so the cache is required, not optional.
-QIcon themedIcon(char const* const pcPrimary, char const* const pcFallback1 = nullptr, char const* const pcFallback2 = nullptr)
+QIcon themedIcon(char const* pcPrimary, char const* pcFallback1 = nullptr, char const* pcFallback2 = nullptr)
 {
 	static QHash<QString, QIcon> s_mapCache;
 	static QMutex s_mutex;
@@ -69,13 +69,13 @@ QColor paletteAwareColor(QColor const& rFallback)
 	return rFallback.lighter(125);
 }
 
-QString hexText(unsigned int const uValue)
+QString hexText(unsigned int uValue)
 {
 	return QStringLiteral("0x%1").arg(uValue, 0, 16);
 }
 } //namespace
 
-QIcon ModuleStatusIcon(EModuleStatus const eStatus)
+QIcon ModuleStatusIcon(EModuleStatus eStatus)
 {
 	switch (eStatus)
 	{
@@ -90,7 +90,7 @@ QIcon ModuleStatusIcon(EModuleStatus const eStatus)
 	return themedIcon("dialog-question", "unknown");
 }
 
-QIcon SymbolStatusIcon(ESymbolStatus const eStatus)
+QIcon SymbolStatusIcon(ESymbolStatus eStatus)
 {
 	switch (eStatus)
 	{
@@ -104,7 +104,7 @@ QIcon SymbolStatusIcon(ESymbolStatus const eStatus)
 	return themedIcon("dialog-question", "unknown");
 }
 
-QIcon SymbolTypeIcon(ESymbolType const eType)
+QIcon SymbolTypeIcon(ESymbolType eType)
 {
 	switch (eType)
 	{
@@ -122,7 +122,7 @@ QIcon ApplicationIcon()
 	return themedIcon("application-x-executable", "applications-development");
 }
 
-QColor ModuleStatusColor(EModuleStatus const eStatus)
+QColor ModuleStatusColor(EModuleStatus eStatus)
 {
 	switch (eStatus)
 	{
@@ -135,7 +135,7 @@ QColor ModuleStatusColor(EModuleStatus const eStatus)
 	return QColor();
 }
 
-QColor SymbolStatusColor(ESymbolStatus const eStatus)
+QColor SymbolStatusColor(ESymbolStatus eStatus)
 {
 	switch (eStatus)
 	{
@@ -147,7 +147,7 @@ QColor SymbolStatusColor(ESymbolStatus const eStatus)
 	return QColor();
 }
 
-QString ModuleStatusText(EModuleStatus const eStatus)
+QString ModuleStatusText(EModuleStatus eStatus)
 {
 	switch (eStatus)
 	{
@@ -162,7 +162,7 @@ QString ModuleStatusText(EModuleStatus const eStatus)
 	return i18n("Unknown");
 }
 
-QString SymbolStatusText(ESymbolStatus const eStatus)
+QString SymbolStatusText(ESymbolStatus eStatus)
 {
 	switch (eStatus)
 	{
@@ -178,7 +178,7 @@ QString SymbolStatusText(ESymbolStatus const eStatus)
 
 // The symbol type/binding/visibility spellings are deliberately not translated:
 // they are the standard ELF names and users match them against readelf output.
-QString SymbolTypeText(ESymbolType const eType)
+QString SymbolTypeText(ESymbolType eType)
 {
 	switch (eType)
 	{
@@ -195,7 +195,7 @@ QString SymbolTypeText(ESymbolType const eType)
 	return hexText(static_cast<unsigned int>(eType));
 }
 
-QString SymbolBindingText(ESymbolBinding const eBinding)
+QString SymbolBindingText(ESymbolBinding eBinding)
 {
 	switch (eBinding)
 	{
@@ -208,7 +208,7 @@ QString SymbolBindingText(ESymbolBinding const eBinding)
 	return hexText(static_cast<unsigned int>(eBinding));
 }
 
-QString SymbolVisibilityText(ESymbolVisibility const eVisibility)
+QString SymbolVisibilityText(ESymbolVisibility eVisibility)
 {
 	switch (eVisibility)
 	{
@@ -221,7 +221,7 @@ QString SymbolVisibilityText(ESymbolVisibility const eVisibility)
 	return hexText(static_cast<unsigned int>(eVisibility));
 }
 
-QString ModuleStatusTooltip(EModuleStatus const eStatus)
+QString ModuleStatusTooltip(EModuleStatus eStatus)
 {
 	switch (eStatus)
 	{
@@ -236,7 +236,7 @@ QString ModuleStatusTooltip(EModuleStatus const eStatus)
 	return i18n("This module has not been analyzed yet.");
 }
 
-QString SymbolStatusTooltip(ESymbolStatus const eStatus)
+QString SymbolStatusTooltip(ESymbolStatus eStatus)
 {
 	switch (eStatus)
 	{

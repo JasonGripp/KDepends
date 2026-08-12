@@ -41,7 +41,7 @@ inline void CBinaryReader::ClearError() const
 	m_bError = false;
 }
 
-inline bool CBinaryReader::Seek(std::size_t const uOffset)
+inline bool CBinaryReader::Seek(std::size_t uOffset)
 {
 	if (uOffset > m_spanData.size())
 	{
@@ -53,7 +53,7 @@ inline bool CBinaryReader::Seek(std::size_t const uOffset)
 	return true;
 }
 
-inline bool CBinaryReader::Skip(std::size_t const uCount)
+inline bool CBinaryReader::Skip(std::size_t uCount)
 {
 	if (uCount > Remaining())
 	{
@@ -65,14 +65,14 @@ inline bool CBinaryReader::Skip(std::size_t const uCount)
 	return true;
 }
 
-inline bool CBinaryReader::CanRead(std::size_t const uCount) const
+inline bool CBinaryReader::CanRead(std::size_t uCount) const
 {
 	if (m_bError)
 		return false;
 	return uCount <= Remaining();
 }
 
-inline bool CBinaryReader::CanReadAt(std::size_t const uOffset, std::size_t const uCount) const
+inline bool CBinaryReader::CanReadAt(std::size_t uOffset, std::size_t uCount) const
 {
 	if (uOffset > m_spanData.size())
 		return false;
@@ -81,7 +81,7 @@ inline bool CBinaryReader::CanReadAt(std::size_t const uOffset, std::size_t cons
 	return true;
 }
 
-inline void CBinaryReader::Set64Bit(bool const b64Bit)
+inline void CBinaryReader::Set64Bit(bool b64Bit)
 {
 	m_b64Bit = b64Bit;
 }

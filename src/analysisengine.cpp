@@ -68,7 +68,7 @@ private:
 	bool m_bHasResult = false;
 
 public:
-	CAnalysisTask(CAnalysisEngine* const pEngine, std::weak_ptr<CAnalysisEngine::SSession> pSession, SessionId const uSession, int const eKind, std::size_t const uIndex)
+	CAnalysisTask(CAnalysisEngine* pEngine, std::weak_ptr<CAnalysisEngine::SSession> pSession, SessionId uSession, int eKind, std::size_t uIndex)
 	: m_pEngine(pEngine)
 	, m_pSession(std::move(pSession))
 	, m_uSession(uSession)
@@ -200,7 +200,7 @@ private:
 	}
 };
 
-CAnalysisEngine::CAnalysisEngine(QObject* const pParent)
+CAnalysisEngine::CAnalysisEngine(QObject* pParent)
 : QObject(pParent)
 {
 	qRegisterMetaType<SModuleInfo>("SModuleInfo");
@@ -246,7 +246,7 @@ SessionId CAnalysisEngine::CreateSession(QString const& rsRootPath)
 	return uSession;
 }
 
-void CAnalysisEngine::CancelSession(SessionId const uSession)
+void CAnalysisEngine::CancelSession(SessionId uSession)
 {
 	std::shared_ptr<SSession> pSession;
 
@@ -283,7 +283,7 @@ void CAnalysisEngine::CancelAll()
 	}
 }
 
-void CAnalysisEngine::RequestRoot(SessionId const uSession)
+void CAnalysisEngine::RequestRoot(SessionId uSession)
 {
 	std::shared_ptr<SSession> const pSession = findSession(uSession);
 	if (!pSession || pSession->bCancelled.load())
@@ -293,7 +293,7 @@ void CAnalysisEngine::RequestRoot(SessionId const uSession)
 	emitStatusThrottled(uSession);
 }
 
-void CAnalysisEngine::RequestExpand(SessionId const uSession, std::size_t const uNode)
+void CAnalysisEngine::RequestExpand(SessionId uSession, std::size_t uNode)
 {
 	std::shared_ptr<SSession> const pSession = findSession(uSession);
 	if (!pSession || pSession->bCancelled.load())
@@ -307,7 +307,7 @@ void CAnalysisEngine::RequestExpand(SessionId const uSession, std::size_t const 
 	emitStatusThrottled(uSession);
 }
 
-void CAnalysisEngine::RequestFullClosure(SessionId const uSession)
+void CAnalysisEngine::RequestFullClosure(SessionId uSession)
 {
 	std::shared_ptr<SSession> const pSession = findSession(uSession);
 	if (!pSession || pSession->bCancelled.load())
@@ -317,7 +317,7 @@ void CAnalysisEngine::RequestFullClosure(SessionId const uSession)
 	pumpClosure(pSession);
 }
 
-void CAnalysisEngine::RequestImports(SessionId const uSession, std::size_t const uModule)
+void CAnalysisEngine::RequestImports(SessionId uSession, std::size_t uModule)
 {
 	std::shared_ptr<SSession> const pSession = findSession(uSession);
 	if (!pSession || pSession->bCancelled.load())
@@ -335,7 +335,7 @@ void CAnalysisEngine::RequestImports(SessionId const uSession, std::size_t const
 	emitStatusThrottled(uSession);
 }
 
-bool CAnalysisEngine::IsBusy(SessionId const uSession) const
+bool CAnalysisEngine::IsBusy(SessionId uSession) const
 {
 	std::shared_ptr<SSession> const pSession = findSession(uSession);
 	if (!pSession)
@@ -344,7 +344,7 @@ bool CAnalysisEngine::IsBusy(SessionId const uSession) const
 	return pSession->uOutstanding.load() != 0;
 }
 
-SEngineStatus CAnalysisEngine::QueryStatus(SessionId const uSession) const
+SEngineStatus CAnalysisEngine::QueryStatus(SessionId uSession) const
 {
 	SEngineStatus status;
 
@@ -366,7 +366,7 @@ int CAnalysisEngine::MaxThreadCount() const
 	return m_pool.maxThreadCount();
 }
 
-void CAnalysisEngine::deliverRoot(SessionId const uSession, SRootResult const rResult)
+void CAnalysisEngine::deliverRoot(SessionId uSession, SRootResult rResult)
 {
 	std::shared_ptr<SSession> const pSession = findSession(uSession);
 	if (!pSession || pSession->bCancelled.load())
@@ -391,7 +391,7 @@ void CAnalysisEngine::deliverRoot(SessionId const uSession, SRootResult const rR
 	RequestFullClosure(uSession);
 }
 
-void CAnalysisEngine::deliverExpansion(SessionId const uSession, SExpandOutcome const rOutcome)
+void CAnalysisEngine::deliverExpansion(SessionId uSession, SExpandOutcome rOutcome)
 {
 	std::shared_ptr<SSession> const pSession = findSession(uSession);
 	if (!pSession || pSession->bCancelled.load())
@@ -420,7 +420,7 @@ void CAnalysisEngine::deliverExpansion(SessionId const uSession, SExpandOutcome 
 	pumpClosure(pSession);
 }
 
-void CAnalysisEngine::deliverImports(SessionId const uSession, SImportResolution const rResolution)
+void CAnalysisEngine::deliverImports(SessionId uSession, SImportResolution rResolution)
 {
 	std::shared_ptr<SSession> const pSession = findSession(uSession);
 	if (!pSession || pSession->bCancelled.load())
@@ -429,12 +429,12 @@ void CAnalysisEngine::deliverImports(SessionId const uSession, SImportResolution
 	Q_EMIT ImportsResolved(uSession, rResolution);
 }
 
-void CAnalysisEngine::deliverStatus(SessionId const uSession)
+void CAnalysisEngine::deliverStatus(SessionId uSession)
 {
 	emitStatusThrottled(uSession);
 }
 
-std::shared_ptr<CAnalysisEngine::SSession> CAnalysisEngine::findSession(SessionId const uSession) const
+std::shared_ptr<CAnalysisEngine::SSession> CAnalysisEngine::findSession(SessionId uSession) const
 {
 	QMutexLocker const locker(&m_mutex);
 
@@ -445,7 +445,7 @@ std::shared_ptr<CAnalysisEngine::SSession> CAnalysisEngine::findSession(SessionI
 	return itFound->second;
 }
 
-void CAnalysisEngine::startTask(std::shared_ptr<SSession> const& rpSession, int const eKind, std::size_t const uIndex)
+void CAnalysisEngine::startTask(std::shared_ptr<SSession> const& rpSession, int eKind, std::size_t uIndex)
 {
 	rpSession->uOutstanding.fetch_add(1);
 
@@ -503,7 +503,7 @@ void CAnalysisEngine::pumpClosure(std::shared_ptr<SSession> const& rpSession)
 	emitStatusThrottled(rpSession->uId);
 }
 
-void CAnalysisEngine::emitStatusThrottled(SessionId const uSession)
+void CAnalysisEngine::emitStatusThrottled(SessionId uSession)
 {
 	std::shared_ptr<SSession> const pSession = findSession(uSession);
 	if (!pSession || pSession->bCancelled.load())

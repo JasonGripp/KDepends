@@ -42,7 +42,7 @@
 #include <initializer_list>
 #include <utility>
 
-CModuleTab::CModuleTab(CAnalysisEngine& rEngine, QString const& rsFilePath, QWidget* const pParent)
+CModuleTab::CModuleTab(CAnalysisEngine& rEngine, QString const& rsFilePath, QWidget* pParent)
 : QWidget(pParent)
 , m_rEngine(rEngine)
 , m_sFilePath(rsFilePath)
@@ -145,7 +145,7 @@ void CModuleTab::applyDefaultSplitterSizes()
 	m_pMainSplitter->setSizes({iHeight - iModulesHeight, iModulesHeight});
 }
 
-void CModuleTab::showEvent(QShowEvent* const pEvent)
+void CModuleTab::showEvent(QShowEvent* pEvent)
 {
 	QWidget::showEvent(pEvent);
 
@@ -219,7 +219,7 @@ SessionId CModuleTab::Session() const
 	return m_uSession;
 }
 
-void CModuleTab::SetDemangleEnabled(bool const bEnabled)
+void CModuleTab::SetDemangleEnabled(bool bEnabled)
 {
 	m_bDemangle = bEnabled;
 
@@ -285,7 +285,7 @@ void CModuleTab::RestoreSplitterState(QByteArray const& rState)
 	m_bSplitterStateRestored = true;
 }
 
-void CModuleTab::SelectModule(std::size_t const uModule)
+void CModuleTab::SelectModule(std::size_t uModule)
 {
 	if (uModule == g_uInvalidIndex)
 		return;
@@ -347,7 +347,7 @@ void CModuleTab::CollapseAll()
 	m_pTreeView->collapseAll();
 }
 
-void CModuleTab::engineRootReady(SessionId const uSession, SRootResult const& rResult)
+void CModuleTab::engineRootReady(SessionId uSession, SRootResult const& rResult)
 {
 	if (uSession != m_uSession)
 		return;
@@ -369,7 +369,7 @@ void CModuleTab::engineRootReady(SessionId const uSession, SRootResult const& rR
 	Q_EMIT TitleChanged();
 }
 
-void CModuleTab::engineNodeExpanded(SessionId const uSession, SExpandOutcome const& rOutcome)
+void CModuleTab::engineNodeExpanded(SessionId uSession, SExpandOutcome const& rOutcome)
 {
 	if (uSession != m_uSession)
 		return;
@@ -386,7 +386,7 @@ void CModuleTab::engineNodeExpanded(SessionId const uSession, SExpandOutcome con
 	Q_EMIT TitleChanged();
 }
 
-void CModuleTab::engineModuleDiscovered(SessionId const uSession, std::size_t const uModule, SModuleInfo const& rInfo)
+void CModuleTab::engineModuleDiscovered(SessionId uSession, std::size_t uModule, SModuleInfo const& rInfo)
 {
 	if (uSession != m_uSession)
 		return;
@@ -395,7 +395,7 @@ void CModuleTab::engineModuleDiscovered(SessionId const uSession, std::size_t co
 	m_pModulesModel->AddModule(uModule, rInfo, eStatus);
 }
 
-void CModuleTab::engineModuleUpdated(SessionId const uSession, SModuleUpdate const& rUpdate)
+void CModuleTab::engineModuleUpdated(SessionId uSession, SModuleUpdate const& rUpdate)
 {
 	if (uSession != m_uSession)
 		return;
@@ -408,7 +408,7 @@ void CModuleTab::engineModuleUpdated(SessionId const uSession, SModuleUpdate con
 		showModule(rUpdate.uModule);
 }
 
-void CModuleTab::engineImportsResolved(SessionId const uSession, SImportResolution const& rResolution)
+void CModuleTab::engineImportsResolved(SessionId uSession, SImportResolution const& rResolution)
 {
 	if (uSession != m_uSession)
 		return;
@@ -420,7 +420,7 @@ void CModuleTab::engineImportsResolved(SessionId const uSession, SImportResoluti
 	updateStatusLabel();
 }
 
-void CModuleTab::engineClosureComplete(SessionId const uSession)
+void CModuleTab::engineClosureComplete(SessionId uSession)
 {
 	if (uSession != m_uSession)
 		return;
@@ -435,7 +435,7 @@ void CModuleTab::engineClosureComplete(SessionId const uSession)
 	Q_EMIT TitleChanged();
 }
 
-void CModuleTab::engineStatusChanged(SessionId const uSession, SEngineStatus const& rStatus)
+void CModuleTab::engineStatusChanged(SessionId uSession, SEngineStatus const& rStatus)
 {
 	if (uSession != m_uSession)
 		return;
@@ -449,7 +449,7 @@ void CModuleTab::engineStatusChanged(SessionId const uSession, SEngineStatus con
 	updateStatusLabel();
 }
 
-void CModuleTab::engineAnalysisFailed(SessionId const uSession, QString const& rsMessage)
+void CModuleTab::engineAnalysisFailed(SessionId uSession, QString const& rsMessage)
 {
 	if (uSession != m_uSession)
 		return;
@@ -461,7 +461,7 @@ void CModuleTab::engineAnalysisFailed(SessionId const uSession, QString const& r
 	Q_EMIT StatusMessage(rsMessage);
 }
 
-void CModuleTab::treeExpansionNeeded(std::size_t const uNode)
+void CModuleTab::treeExpansionNeeded(std::size_t uNode)
 {
 	if (m_uSession == 0)
 		return;
@@ -511,7 +511,7 @@ void CModuleTab::treeContextMenu(QPoint const& rPoint)
 	menu.exec(m_pTreeView->viewport()->mapToGlobal(rPoint));
 }
 
-void CModuleTab::modulesContextMenu(QMenu* const pMenu, QModelIndex const& rSourceIndex)
+void CModuleTab::modulesContextMenu(QMenu* pMenu, QModelIndex const& rSourceIndex)
 {
 	if (pMenu == nullptr)
 		return;
@@ -520,7 +520,7 @@ void CModuleTab::modulesContextMenu(QMenu* const pMenu, QModelIndex const& rSour
 	addModuleActions(pMenu, sPath);
 }
 
-void CModuleTab::addModuleActions(QMenu* const pMenu, QString const& rsPath)
+void CModuleTab::addModuleActions(QMenu* pMenu, QString const& rsPath)
 {
 	bool const bHasPath = !rsPath.isEmpty();
 
@@ -541,7 +541,7 @@ void CModuleTab::addModuleActions(QMenu* const pMenu, QString const& rsPath)
 		{ openContainingFolder(rsPath); });
 }
 
-void CModuleTab::symbolContextMenu(QMenu* const pMenu, QModelIndex const& rSourceIndex)
+void CModuleTab::symbolContextMenu(QMenu* pMenu, QModelIndex const& rSourceIndex)
 {
 	if (pMenu == nullptr)
 		return;
@@ -557,7 +557,7 @@ void CModuleTab::symbolContextMenu(QMenu* const pMenu, QModelIndex const& rSourc
 	pDemangle->setCheckable(true);
 	pDemangle->setChecked(m_bDemangle);
 	pDemangle->setShortcut(QKeySequence(Qt::Key_F10));
-	connect(pDemangle, &QAction::triggered, this, [this](bool const bChecked)
+	connect(pDemangle, &QAction::triggered, this, [this](bool bChecked)
 		{ Q_EMIT DemangleToggleRequested(bChecked); });
 
 	QAction* const pCopyName = pMenu->addAction(i18n("Copy &symbol name"));
@@ -593,7 +593,7 @@ void CModuleTab::importActivated(QModelIndex const& rSourceIndex)
 	SelectModule(uProvider);
 }
 
-void CModuleTab::showModule(std::size_t const uModule)
+void CModuleTab::showModule(std::size_t uModule)
 {
 	if (uModule == g_uInvalidIndex)
 	{
@@ -707,7 +707,7 @@ void CModuleTab::LookUpSymbolOnline(QString const& rsSymbol) const
 	QDesktopServices::openUrl(url);
 }
 
-QString CModuleTab::symbolNameForRow(CFilteredTable const* const pTable, QModelIndex const& rSourceIndex) const
+QString CModuleTab::symbolNameForRow(CFilteredTable const* pTable, QModelIndex const& rSourceIndex) const
 {
 	if (pTable == nullptr)
 		return QString();

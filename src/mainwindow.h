@@ -50,7 +50,7 @@ private:
 	QByteArray m_splitterState;
 
 public:
-	explicit CMainWindow(QWidget* const pParent = nullptr);
+	explicit CMainWindow(QWidget* pParent = nullptr);
 	~CMainWindow() override;
 
 	void OpenFile(QString const& rsPath);
@@ -62,21 +62,21 @@ public:
 	QSize sizeHint() const override;
 
 protected:
-	void dragEnterEvent(QDragEnterEvent* const pEvent) override;
-	void dropEvent(QDropEvent* const pEvent) override;
-	void closeEvent(QCloseEvent* const pEvent) override;
+	void dragEnterEvent(QDragEnterEvent* pEvent) override;
+	void dropEvent(QDropEvent* pEvent) override;
+	void closeEvent(QCloseEvent* pEvent) override;
 
 private Q_SLOTS:
 
 	void openFileDialog();
 	void openRecentFile(QUrl const& rUrl);
 	void closeCurrentTab();
-	void closeTab(int const iIndex);
-	void currentTabChanged(int const iIndex);
+	void closeTab(int iIndex);
+	void currentTabChanged(int iIndex);
 	void reanalyzeCurrentTab();
-	void demangleToggled(bool const bEnabled);
+	void demangleToggled(bool bEnabled);
 	void tabOpenFileRequested(QString const& rsPath);
-	void tabBusyChanged(bool const bBusy);
+	void tabBusyChanged(bool bBusy);
 	void tabTitleChanged();
 	void tabStatusMessage(QString const& rsMessage);
 	void lookUpSelectedSymbol();
@@ -89,10 +89,10 @@ private:
 	void writeSettings();
 
 	CModuleTab* currentTab() const;
-	CModuleTab* tabAt(int const iIndex) const;
+	CModuleTab* tabAt(int iIndex) const;
 	CModuleTab* findTabForPath(QString const& rsPath) const;
 
-	void connectTab(CModuleTab* const pTab);
+	void connectTab(CModuleTab* pTab);
 	void updateActionStates();
 	void updateWindowTitle();
 };

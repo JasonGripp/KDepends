@@ -30,12 +30,12 @@ constexpr std::size_t g_uNewEntrySize = 24;
 // struct cache_file_new is 8-byte aligned.
 constexpr std::size_t g_uCacheAlignment = 8;
 
-std::size_t AlignCache(std::size_t const uOffset)
+std::size_t AlignCache(std::size_t uOffset)
 {
 	return (uOffset + g_uCacheAlignment - 1) & ~(g_uCacheAlignment - 1);
 }
 
-bool MatchesLiteral(CBinaryReader const& rReader, std::size_t const uOffset, char const* const pcLiteral, std::size_t const uSize)
+bool MatchesLiteral(CBinaryReader const& rReader, std::size_t uOffset, char const* pcLiteral, std::size_t uSize)
 {
 	if (!rReader.CanReadAt(uOffset, uSize))
 		return false;
@@ -44,7 +44,7 @@ bool MatchesLiteral(CBinaryReader const& rReader, std::size_t const uOffset, cha
 	return std::memcmp(spanData.data() + uOffset, pcLiteral, uSize) == 0;
 }
 
-bool IsAcceptableLibcType(std::int32_t const iFlags)
+bool IsAcceptableLibcType(std::int32_t iFlags)
 {
 	std::int32_t const iType = iFlags & static_cast<std::int32_t>(ELdCacheFlags::TypeMask);
 	return iType == static_cast<std::int32_t>(ELdCacheFlags::Elf)
@@ -240,7 +240,7 @@ bool CLdCache::parseOldFormat(CBinaryReader& rReader, std::size_t& ruOutEndOffse
 	return true;
 }
 
-bool CLdCache::parseNewFormat(CBinaryReader& rReader, std::size_t const uBaseOffset)
+bool CLdCache::parseNewFormat(CBinaryReader& rReader, std::size_t uBaseOffset)
 {
 	if (!rReader.CanReadAt(uBaseOffset, g_uNewHeaderSize))
 	{
@@ -305,7 +305,7 @@ bool CLdCache::parseNewFormat(CBinaryReader& rReader, std::size_t const uBaseOff
 	return true;
 }
 
-bool CLdCache::addEntry(std::string sName, std::string sPath, std::int32_t const iFlags, std::uint32_t const uOsVersion, std::uint64_t const uHwcap)
+bool CLdCache::addEntry(std::string sName, std::string sPath, std::int32_t iFlags, std::uint32_t uOsVersion, std::uint64_t uHwcap)
 {
 	if (sName.empty())
 		return false;

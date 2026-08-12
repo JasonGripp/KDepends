@@ -4,4 +4,4 @@ Commit and push only when asked.
 
 ---
 
-@.claude/coding-style.md
+@coding-style.md

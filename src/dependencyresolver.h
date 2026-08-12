@@ -57,17 +57,17 @@ private:
 
 public:
 	CDependencyResolver();
-	explicit CDependencyResolver(CLdCache const* const pCache);
+	explicit CDependencyResolver(CLdCache const* pCache);
 	~CDependencyResolver();
 
 	CDependencyResolver(CDependencyResolver const&) = delete;
 	CDependencyResolver& operator=(CDependencyResolver const&) = delete;
 
 	bool AnalyzeRoot(std::string const& rsPath, SRootResult& rOutResult);
-	bool ExpandNode(std::size_t const uNode, SExpandOutcome& rOutOutcome);
+	bool ExpandNode(std::size_t uNode, SExpandOutcome& rOutOutcome);
 
 	bool NextUnexpandedNode(std::size_t& ruOutNode) const;
-	void CollectUnexpandedNodes(std::vector<std::size_t>& rvOutNodes, std::size_t const uMaxCount) const;
+	void CollectUnexpandedNodes(std::vector<std::size_t>& rvOutNodes, std::size_t uMaxCount) const;
 
 	void Cancel();
 	bool IsCancelled() const;
@@ -76,18 +76,18 @@ public:
 	std::size_t NodeCount() const;
 	std::size_t ModuleCount() const;
 
-	bool ModuleSnapshot(std::size_t const uModule, SModuleInfo& rOutInfo) const;
-	bool NodeSnapshot(std::size_t const uNode, SDependencyNode& rOutNode) const;
+	bool ModuleSnapshot(std::size_t uModule, SModuleInfo& rOutInfo) const;
+	bool NodeSnapshot(std::size_t uNode, SDependencyNode& rOutNode) const;
 	bool ClosureSnapshot(SModuleClosure& rOutClosure) const;
-	bool SetModuleImports(std::size_t const uModule, std::vector<SImportSymbol> vImports);
+	bool SetModuleImports(std::size_t uModule, std::vector<SImportSymbol> vImports);
 	std::string RootPath() const;
 
 private:
-	bool claimNode(std::size_t const uNode, std::string& rsOutPath, std::size_t& ruOutModule, std::vector<std::string>& rvOutRpathChain, bool& rbOutAlreadyDone);
+	bool claimNode(std::size_t uNode, std::string& rsOutPath, std::size_t& ruOutModule, std::vector<std::string>& rvOutRpathChain, bool& rbOutAlreadyDone);
 	bool loadModule(std::string const& rsPath, SModuleInfo& rOutInfo, std::string& rsOutError) const;
 	bool resolveNeededNames(SModuleInfo const& rRequester, std::vector<std::string> const& rvRpathChain, std::vector<SResolveResult>& rvOutResults) const;
-	bool expandClaimedNode(std::size_t const uNode, SModuleInfo const& rInfo, std::vector<std::string> const& rvRpathChain, SExpandOutcome& rOutOutcome);
-	void commitExpansion(std::size_t const uNode, SModuleInfo const& rInfo, std::vector<SResolveResult> const& rvResults, std::vector<std::string> const& rvRpathChain, SExpandOutcome& rOutOutcome);
+	bool expandClaimedNode(std::size_t uNode, SModuleInfo const& rInfo, std::vector<std::string> const& rvRpathChain, SExpandOutcome& rOutOutcome);
+	void commitExpansion(std::size_t uNode, SModuleInfo const& rInfo, std::vector<SResolveResult> const& rvResults, std::vector<std::string> const& rvRpathChain, SExpandOutcome& rOutOutcome);
 
 	std::size_t insertModuleLocked(SModuleInfo rInfo);
 	std::size_t insertNodeLocked(SDependencyNode rNode, std::vector<std::string> vRpathChain);

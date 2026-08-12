@@ -17,7 +17,7 @@
 #include <vector>
 
 namespace {
-bool FindDynamicValue(std::vector<SDynamicEntry> const& rvDynamic, EDynamicTag const eTag, std::uint64_t& ruOutValue)
+bool FindDynamicValue(std::vector<SDynamicEntry> const& rvDynamic, EDynamicTag eTag, std::uint64_t& ruOutValue)
 {
 	for (SDynamicEntry const& rEntry : rvDynamic)
 	{
@@ -162,7 +162,7 @@ bool CElfParser::SniffFile(std::string const& rsPath, SElfSniff& rOutSniff)
 	return true;
 }
 
-std::string CElfParser::MachineName(EElfMachine const eMachine)
+std::string CElfParser::MachineName(EElfMachine eMachine)
 {
 	switch (eMachine)
 	{
@@ -190,7 +190,7 @@ std::string CElfParser::MachineName(EElfMachine const eMachine)
 	return std::string(acBuffer);
 }
 
-std::string CElfParser::ClassName(EElfClass const eClass)
+std::string CElfParser::ClassName(EElfClass eClass)
 {
 	switch (eClass)
 	{
@@ -202,7 +202,7 @@ std::string CElfParser::ClassName(EElfClass const eClass)
 	return "None";
 }
 
-std::string CElfParser::TypeName(EElfType const eType, bool const bPositionIndependent)
+std::string CElfParser::TypeName(EElfType eType, bool bPositionIndependent)
 {
 	switch (eType)
 	{
@@ -691,7 +691,7 @@ bool CElfParser::parseDynamicSymbols()
 	return true;
 }
 
-void CElfParser::classifySymbol(SElfSymbol const& rSymbol, std::string_view const sName, std::uint16_t const uVersionIndex)
+void CElfParser::classifySymbol(SElfSymbol const& rSymbol, std::string_view sName, std::uint16_t uVersionIndex)
 {
 	// Local symbols participate in no global resolution.
 	if (rSymbol.eBinding == ESymbolBinding::Local)
@@ -775,7 +775,7 @@ bool CElfParser::finalize(std::string const& rsPath)
 	return true;
 }
 
-std::uint64_t CElfParser::virtualToFileOffset(std::uint64_t const uVirtualAddress) const
+std::uint64_t CElfParser::virtualToFileOffset(std::uint64_t uVirtualAddress) const
 {
 	for (SProgramHeader const& rHeader : m_vProgramHeaders)
 	{
@@ -822,7 +822,7 @@ std::uint64_t CElfParser::deriveSymbolCount() const
 
 	std::uint64_t const uFileSize = static_cast<std::uint64_t>(m_vData.size());
 
-	auto const IsPlausible = [&](std::uint64_t const uCount) -> bool
+	auto const IsPlausible = [&](std::uint64_t uCount) -> bool
 	{
 		if (uCount == 0)
 			return false;
@@ -974,7 +974,7 @@ std::uint64_t CElfParser::deriveSymbolCount() const
 	return 0;
 }
 
-std::string_view CElfParser::dynamicString(std::uint64_t const uStringOffset) const
+std::string_view CElfParser::dynamicString(std::uint64_t uStringOffset) const
 {
 	if (m_uDynStrSize == 0)
 		return {};
@@ -990,7 +990,7 @@ bool CElfParser::fail(std::string sMessage)
 	return false;
 }
 
-std::vector<std::string> CElfParser::splitSearchList(std::string_view const sValue)
+std::vector<std::string> CElfParser::splitSearchList(std::string_view sValue)
 {
 	std::vector<std::string> vEntries;
 

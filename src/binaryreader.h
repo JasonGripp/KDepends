@@ -26,10 +26,10 @@ private:
 
 public:
 	CBinaryReader();
-	explicit CBinaryReader(std::span<std::uint8_t const> const spanData);
-	CBinaryReader(std::span<std::uint8_t const> const spanData, std::size_t const uOffset);
+	explicit CBinaryReader(std::span<std::uint8_t const> spanData);
+	CBinaryReader(std::span<std::uint8_t const> spanData, std::size_t uOffset);
 
-	void Reset(std::span<std::uint8_t const> const spanData);
+	void Reset(std::span<std::uint8_t const> spanData);
 
 	std::span<std::uint8_t const> Data() const;
 	std::size_t Size() const;
@@ -42,12 +42,12 @@ public:
 	void SetError() const;
 	void ClearError() const;
 
-	bool Seek(std::size_t const uOffset);
-	bool Skip(std::size_t const uCount);
-	bool CanRead(std::size_t const uCount) const;
-	bool CanReadAt(std::size_t const uOffset, std::size_t const uCount) const;
+	bool Seek(std::size_t uOffset);
+	bool Skip(std::size_t uCount);
+	bool CanRead(std::size_t uCount) const;
+	bool CanReadAt(std::size_t uOffset, std::size_t uCount) const;
 
-	void Set64Bit(bool const b64Bit);
+	void Set64Bit(bool b64Bit);
 	bool Is64Bit() const;
 
 	// Sequential scalar reads, little-endian, advancing the cursor.
@@ -57,32 +57,32 @@ public:
 	std::uint64_t ReadU64();
 	std::int32_t ReadI32();
 	std::uint64_t ReadAddress();
-	bool ReadBytes(std::span<std::uint8_t> const spanOut);
+	bool ReadBytes(std::span<std::uint8_t> spanOut);
 
 	// Absolute reads; these do not move the cursor.
-	std::uint8_t ReadU8At(std::size_t const uOffset) const;
-	std::uint16_t ReadU16At(std::size_t const uOffset) const;
-	std::uint32_t ReadU32At(std::size_t const uOffset) const;
-	std::uint64_t ReadU64At(std::size_t const uOffset) const;
+	std::uint8_t ReadU8At(std::size_t uOffset) const;
+	std::uint16_t ReadU16At(std::size_t uOffset) const;
+	std::uint32_t ReadU32At(std::size_t uOffset) const;
+	std::uint64_t ReadU64At(std::size_t uOffset) const;
 
-	std::string_view ReadStringAt(std::size_t const uOffset) const;
-	std::string_view ReadStringAt(std::size_t const uTableOffset, std::size_t const uTableSize, std::size_t const uStringOffset) const;
+	std::string_view ReadStringAt(std::size_t uOffset) const;
+	std::string_view ReadStringAt(std::size_t uTableOffset, std::size_t uTableSize, std::size_t uStringOffset) const;
 
 	// ELF structure reads. Each uses the on-disk layout selected by Is64Bit().
 	bool ReadElfIdent(SElfIdent& rIdent);
 	bool ReadElfHeader(SElfHeader& rHeader);
-	bool ReadProgramHeaderAt(std::size_t const uOffset, SProgramHeader& rHeader) const;
-	bool ReadSectionHeaderAt(std::size_t const uOffset, SSectionHeader& rHeader) const;
-	bool ReadDynamicEntryAt(std::size_t const uOffset, SDynamicEntry& rEntry) const;
-	bool ReadSymbolAt(std::size_t const uOffset, SElfSymbol& rSymbol) const;
-	bool ReadVersionDefinitionAt(std::size_t const uOffset, SVersionDefinition& rDefinition) const;
-	bool ReadVersionDefinitionAuxAt(std::size_t const uOffset, SVersionDefinitionAux& rAux) const;
-	bool ReadVersionNeedAt(std::size_t const uOffset, SVersionNeed& rNeed) const;
-	bool ReadVersionNeedAuxAt(std::size_t const uOffset, SVersionNeedAux& rAux) const;
+	bool ReadProgramHeaderAt(std::size_t uOffset, SProgramHeader& rHeader) const;
+	bool ReadSectionHeaderAt(std::size_t uOffset, SSectionHeader& rHeader) const;
+	bool ReadDynamicEntryAt(std::size_t uOffset, SDynamicEntry& rEntry) const;
+	bool ReadSymbolAt(std::size_t uOffset, SElfSymbol& rSymbol) const;
+	bool ReadVersionDefinitionAt(std::size_t uOffset, SVersionDefinition& rDefinition) const;
+	bool ReadVersionDefinitionAuxAt(std::size_t uOffset, SVersionDefinitionAux& rAux) const;
+	bool ReadVersionNeedAt(std::size_t uOffset, SVersionNeed& rNeed) const;
+	bool ReadVersionNeedAuxAt(std::size_t uOffset, SVersionNeedAux& rAux) const;
 
 private:
-	bool checkRange(std::size_t const uOffset, std::size_t const uCount) const;
-	std::uint64_t readLittleEndianAt(std::size_t const uOffset, std::size_t const uByteCount) const;
+	bool checkRange(std::size_t uOffset, std::size_t uCount) const;
+	std::uint64_t readLittleEndianAt(std::size_t uOffset, std::size_t uByteCount) const;
 };
 
 // 2 GiB ceiling on whole-file loads; a larger file is rejected with a clear
@@ -90,7 +90,7 @@ private:
 inline constexpr std::uint64_t g_uMaxFileSize = 2ull * 1024ull * 1024ull * 1024ull;
 
 bool LoadFileContents(std::string const& rsPath, std::vector<std::uint8_t>& rvOutData, std::string& rsOutError);
-bool LoadFileContents(std::string const& rsPath, std::vector<std::uint8_t>& rvOutData, std::size_t const uMaxBytes, std::string& rsOutError);
+bool LoadFileContents(std::string const& rsPath, std::vector<std::uint8_t>& rvOutData, std::size_t uMaxBytes, std::string& rsOutError);
 bool QueryFileSize(std::string const& rsPath, std::uint64_t& ruOutSize, std::string& rsOutError);
 bool FileExists(std::string const& rsPath);
 

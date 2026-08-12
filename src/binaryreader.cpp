@@ -17,12 +17,12 @@ CBinaryReader::CBinaryReader()
 {
 }
 
-CBinaryReader::CBinaryReader(std::span<std::uint8_t const> const spanData)
+CBinaryReader::CBinaryReader(std::span<std::uint8_t const> spanData)
 : m_spanData(spanData)
 {
 }
 
-CBinaryReader::CBinaryReader(std::span<std::uint8_t const> const spanData, std::size_t const uOffset)
+CBinaryReader::CBinaryReader(std::span<std::uint8_t const> spanData, std::size_t uOffset)
 : m_spanData(spanData)
 {
 	if (uOffset > m_spanData.size())
@@ -36,14 +36,14 @@ CBinaryReader::CBinaryReader(std::span<std::uint8_t const> const spanData, std::
 	}
 }
 
-void CBinaryReader::Reset(std::span<std::uint8_t const> const spanData)
+void CBinaryReader::Reset(std::span<std::uint8_t const> spanData)
 {
 	m_spanData = spanData;
 	m_uOffset = 0;
 	m_bError = false;
 }
 
-bool CBinaryReader::checkRange(std::size_t const uOffset, std::size_t const uCount) const
+bool CBinaryReader::checkRange(std::size_t uOffset, std::size_t uCount) const
 {
 	if (!CanReadAt(uOffset, uCount))
 	{
@@ -54,7 +54,7 @@ bool CBinaryReader::checkRange(std::size_t const uOffset, std::size_t const uCou
 	return true;
 }
 
-std::uint64_t CBinaryReader::readLittleEndianAt(std::size_t const uOffset, std::size_t const uByteCount) const
+std::uint64_t CBinaryReader::readLittleEndianAt(std::size_t uOffset, std::size_t uByteCount) const
 {
 	std::uint64_t uValue = 0;
 
@@ -118,7 +118,7 @@ std::uint64_t CBinaryReader::ReadAddress()
 	return ReadU32();
 }
 
-bool CBinaryReader::ReadBytes(std::span<std::uint8_t> const spanOut)
+bool CBinaryReader::ReadBytes(std::span<std::uint8_t> spanOut)
 {
 	if (!checkRange(m_uOffset, spanOut.size()))
 		return false;
@@ -132,40 +132,40 @@ bool CBinaryReader::ReadBytes(std::span<std::uint8_t> const spanOut)
 	return true;
 }
 
-std::uint8_t CBinaryReader::ReadU8At(std::size_t const uOffset) const
+std::uint8_t CBinaryReader::ReadU8At(std::size_t uOffset) const
 {
 	if (!checkRange(uOffset, 1))
 		return 0;
 	return m_spanData[uOffset];
 }
 
-std::uint16_t CBinaryReader::ReadU16At(std::size_t const uOffset) const
+std::uint16_t CBinaryReader::ReadU16At(std::size_t uOffset) const
 {
 	if (!checkRange(uOffset, 2))
 		return 0;
 	return static_cast<std::uint16_t>(readLittleEndianAt(uOffset, 2));
 }
 
-std::uint32_t CBinaryReader::ReadU32At(std::size_t const uOffset) const
+std::uint32_t CBinaryReader::ReadU32At(std::size_t uOffset) const
 {
 	if (!checkRange(uOffset, 4))
 		return 0;
 	return static_cast<std::uint32_t>(readLittleEndianAt(uOffset, 4));
 }
 
-std::uint64_t CBinaryReader::ReadU64At(std::size_t const uOffset) const
+std::uint64_t CBinaryReader::ReadU64At(std::size_t uOffset) const
 {
 	if (!checkRange(uOffset, 8))
 		return 0;
 	return readLittleEndianAt(uOffset, 8);
 }
 
-std::string_view CBinaryReader::ReadStringAt(std::size_t const uOffset) const
+std::string_view CBinaryReader::ReadStringAt(std::size_t uOffset) const
 {
 	return ReadStringAt(0, m_spanData.size(), uOffset);
 }
 
-std::string_view CBinaryReader::ReadStringAt(std::size_t const uTableOffset, std::size_t const uTableSize, std::size_t const uStringOffset) const
+std::string_view CBinaryReader::ReadStringAt(std::size_t uTableOffset, std::size_t uTableSize, std::size_t uStringOffset) const
 {
 	if (!checkRange(uTableOffset, uTableSize))
 		return {};
@@ -248,7 +248,7 @@ bool CBinaryReader::ReadElfHeader(SElfHeader& rHeader)
 	return !m_bError;
 }
 
-bool CBinaryReader::ReadProgramHeaderAt(std::size_t const uOffset, SProgramHeader& rHeader) const
+bool CBinaryReader::ReadProgramHeaderAt(std::size_t uOffset, SProgramHeader& rHeader) const
 {
 	std::size_t const uEntrySize = m_b64Bit ? g_uProgramHeaderSize64 : g_uProgramHeaderSize32;
 	if (!checkRange(uOffset, uEntrySize))
@@ -280,7 +280,7 @@ bool CBinaryReader::ReadProgramHeaderAt(std::size_t const uOffset, SProgramHeade
 	return true;
 }
 
-bool CBinaryReader::ReadSectionHeaderAt(std::size_t const uOffset, SSectionHeader& rHeader) const
+bool CBinaryReader::ReadSectionHeaderAt(std::size_t uOffset, SSectionHeader& rHeader) const
 {
 	std::size_t const uEntrySize = m_b64Bit ? g_uSectionHeaderSize64 : g_uSectionHeaderSize32;
 	if (!checkRange(uOffset, uEntrySize))
@@ -316,7 +316,7 @@ bool CBinaryReader::ReadSectionHeaderAt(std::size_t const uOffset, SSectionHeade
 	return true;
 }
 
-bool CBinaryReader::ReadDynamicEntryAt(std::size_t const uOffset, SDynamicEntry& rEntry) const
+bool CBinaryReader::ReadDynamicEntryAt(std::size_t uOffset, SDynamicEntry& rEntry) const
 {
 	std::size_t const uEntrySize = m_b64Bit ? g_uDynamicEntrySize64 : g_uDynamicEntrySize32;
 	if (!checkRange(uOffset, uEntrySize))
@@ -339,7 +339,7 @@ bool CBinaryReader::ReadDynamicEntryAt(std::size_t const uOffset, SDynamicEntry&
 	return true;
 }
 
-bool CBinaryReader::ReadSymbolAt(std::size_t const uOffset, SElfSymbol& rSymbol) const
+bool CBinaryReader::ReadSymbolAt(std::size_t uOffset, SElfSymbol& rSymbol) const
 {
 	std::size_t const uEntrySize = m_b64Bit ? g_uSymbolSize64 : g_uSymbolSize32;
 	if (!checkRange(uOffset, uEntrySize))
@@ -371,7 +371,7 @@ bool CBinaryReader::ReadSymbolAt(std::size_t const uOffset, SElfSymbol& rSymbol)
 	return true;
 }
 
-bool CBinaryReader::ReadVersionDefinitionAt(std::size_t const uOffset, SVersionDefinition& rDefinition) const
+bool CBinaryReader::ReadVersionDefinitionAt(std::size_t uOffset, SVersionDefinition& rDefinition) const
 {
 	if (!checkRange(uOffset, g_uVerdefSize))
 		return false;
@@ -387,7 +387,7 @@ bool CBinaryReader::ReadVersionDefinitionAt(std::size_t const uOffset, SVersionD
 	return true;
 }
 
-bool CBinaryReader::ReadVersionDefinitionAuxAt(std::size_t const uOffset, SVersionDefinitionAux& rAux) const
+bool CBinaryReader::ReadVersionDefinitionAuxAt(std::size_t uOffset, SVersionDefinitionAux& rAux) const
 {
 	if (!checkRange(uOffset, g_uVerdauxSize))
 		return false;
@@ -398,7 +398,7 @@ bool CBinaryReader::ReadVersionDefinitionAuxAt(std::size_t const uOffset, SVersi
 	return true;
 }
 
-bool CBinaryReader::ReadVersionNeedAt(std::size_t const uOffset, SVersionNeed& rNeed) const
+bool CBinaryReader::ReadVersionNeedAt(std::size_t uOffset, SVersionNeed& rNeed) const
 {
 	if (!checkRange(uOffset, g_uVerneedSize))
 		return false;
@@ -412,7 +412,7 @@ bool CBinaryReader::ReadVersionNeedAt(std::size_t const uOffset, SVersionNeed& r
 	return true;
 }
 
-bool CBinaryReader::ReadVersionNeedAuxAt(std::size_t const uOffset, SVersionNeedAux& rAux) const
+bool CBinaryReader::ReadVersionNeedAuxAt(std::size_t uOffset, SVersionNeedAux& rAux) const
 {
 	if (!checkRange(uOffset, g_uVernauxSize))
 		return false;
@@ -431,7 +431,7 @@ bool LoadFileContents(std::string const& rsPath, std::vector<std::uint8_t>& rvOu
 	return LoadFileContents(rsPath, rvOutData, 0, rsOutError);
 }
 
-bool LoadFileContents(std::string const& rsPath, std::vector<std::uint8_t>& rvOutData, std::size_t const uMaxBytes, std::string& rsOutError)
+bool LoadFileContents(std::string const& rsPath, std::vector<std::uint8_t>& rvOutData, std::size_t uMaxBytes, std::string& rsOutError)
 {
 	rvOutData.clear();
 	rsOutError.clear();
