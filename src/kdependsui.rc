@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE gui SYSTEM "kpartgui.dtd">
+<gui name="kdepends" version="1">
+  <MenuBar>
+    <Menu name="file"><text>&amp;File</text>
+      <Action name="file_open"/>
+      <Action name="file_open_recent"/>
+      <Separator/>
+      <Action name="reanalyze"/>
+      <Action name="close_tab"/>
+      <Separator/>
+      <Action name="file_quit"/>
+    </Menu>
+    <Menu name="view"><text>&amp;View</text>
+      <Action name="expand_all"/>
+      <Action name="collapse_all"/>
+      <Separator/>
+      <Action name="edit_find"/>
+      <Action name="copy_path"/>
+      <Action name="look_up_symbol"/>
+    </Menu>
+    <Menu name="options"><text>&amp;Options</text>
+      <Action name="demangle_cpp"/>
+    </Menu>
+  </MenuBar>
+  <ToolBar name="mainToolBar"><text>Main Toolbar</text>
+    <Action name="file_open"/>
+    <Separator/>
+    <Action name="demangle_cpp"/>
+    <Action name="edit_find"/>
+  </ToolBar>
+</gui>

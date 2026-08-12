@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Exec=kdepends %U
+Icon=application-x-executable
+Terminal=false
+Name=KDepends
+GenericName=ELF Dependency Inspector
+Comment=Inspect the dynamic dependencies, imports and exports of ELF binaries
+Categories=Qt;KDE;Development;
+MimeType=application/x-executable;application/x-sharedlib;application/x-pie-executable;
