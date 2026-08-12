@@ -187,6 +187,11 @@ void CModuleTab::connectViews()
 	connect(m_pImportsTable, &CFilteredTable::ContextMenuRequested, this, &CModuleTab::symbolContextMenu);
 	connect(m_pImportsTable, &CFilteredTable::Activated, this, &CModuleTab::importActivated);
 	connect(m_pExportsTable, &CFilteredTable::ContextMenuRequested, this, &CModuleTab::symbolContextMenu);
+
+	for (CFilteredTable* const pTable : {m_pImportsTable, m_pExportsTable, m_pModulesTable})
+	{
+		connect(pTable, &CFilteredTable::ColumnVisibilityChanged, this, &CModuleTab::tableColumnVisibilityChanged);
+	}
 }
 
 QString CModuleTab::FilePath() const
@@ -289,6 +294,24 @@ void CModuleTab::RestoreSplitterState(QByteArray const& rState)
 
 	// Suppresses the first-show defaults: the saved layout wins.
 	m_bSplitterStateRestored = true;
+}
+
+SColumnVisibility CModuleTab::ColumnVisibility() const
+{
+	SColumnVisibility visibility;
+
+	visibility.vHiddenImports = m_pImportsTable->HiddenColumns();
+	visibility.vHiddenExports = m_pExportsTable->HiddenColumns();
+	visibility.vHiddenModules = m_pModulesTable->HiddenColumns();
+
+	return visibility;
+}
+
+void CModuleTab::SetColumnVisibility(SColumnVisibility const& rVisibility)
+{
+	m_pImportsTable->SetHiddenColumns(rVisibility.vHiddenImports);
+	m_pExportsTable->SetHiddenColumns(rVisibility.vHiddenExports);
+	m_pModulesTable->SetHiddenColumns(rVisibility.vHiddenModules);
 }
 
 void CModuleTab::SelectModule(std::size_t uModule)
@@ -597,6 +620,11 @@ void CModuleTab::importActivated(QModelIndex const& rSourceIndex)
 		return;
 
 	SelectModule(uProvider);
+}
+
+void CModuleTab::tableColumnVisibilityChanged()
+{
+	Q_EMIT ColumnVisibilityChanged(ColumnVisibility());
 }
 
 void CModuleTab::showModule(std::size_t uModule)

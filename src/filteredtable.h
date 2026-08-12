@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QList>
 #include <QModelIndex>
 #include <QModelIndexList>
 #include <QString>
@@ -20,7 +21,8 @@ class QToolButton;
 
 // The reusable panel used by the imports, exports and flattened-modules views:
 // a table with a hidden-by-default substring filter box beneath it, plus the
-// table behavior all three share (copy, select-all, sorting, context menu).
+// table behavior all three share (copy, select-all, sorting, per-column
+// show/hide, context menu).
 //
 // All coordinates crossing this class' boundary are source coordinates; proxy
 // indices never leak to owners.
@@ -80,9 +82,20 @@ public:
 	void SetAutoResizeColumns(bool bEnabled);
 	void SetStretchColumn(int iColumn);
 
+	bool IsColumnVisible(int iColumn) const;
+	void SetColumnVisible(int iColumn, bool bVisible);
+	void ShowAllColumns();
+	// Source column indexes, so a stored set survives a change to the order the
+	// user has dragged the header sections into.
+	QList<int> HiddenColumns() const;
+	void SetHiddenColumns(QList<int> const& rvColumns);
+
 Q_SIGNALS:
 
 	void ContextMenuRequested(QMenu* pMenu, QModelIndex const& rSourceIndex);
+	// Emitted only for a change the user made here; restoring a stored set is
+	// silent, so pushing one panel's columns to another cannot echo back.
+	void ColumnVisibilityChanged();
 	void SelectionChanged(QModelIndex const& rSourceIndex);
 	void Activated(QModelIndex const& rSourceIndex);
 	void FilterChanged(QString const& rsText);
@@ -91,6 +104,7 @@ private Q_SLOTS:
 
 	void filterTextChanged(QString const& rsText);
 	void showContextMenu(QPoint const& rPoint);
+	void showHeaderContextMenu(QPoint const& rPoint);
 	void currentRowChanged(QModelIndex const& rCurrent, QModelIndex const& rPrevious);
 	void rowsPopulated();
 	void sectionResized(int iLogicalIndex, int iOldSize, int iNewSize);
@@ -102,4 +116,10 @@ private:
 	void absorbViewportResize(QResizeEvent const* pEvent);
 	void fillStretchColumn();
 	void applyStretchTarget();
+	void updateStretchFallback();
+	int columnCount() const;
+	int visibleColumnCount() const;
+	void applyColumnHidden(int iColumn, bool bHidden);
+	QString columnTitle(int iColumn) const;
+	void populateColumnsMenu(QMenu* pMenu);
 };

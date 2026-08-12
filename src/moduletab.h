@@ -4,6 +4,7 @@
 #include "moduledata.h"
 
 #include <QByteArray>
+#include <QList>
 #include <QModelIndex>
 #include <QString>
 #include <QWidget>
@@ -22,6 +23,17 @@ class QShowEvent;
 class QPoint;
 class QSplitter;
 class QTreeView;
+
+// Which columns each of a tab's three tables has hidden, as source column
+// indexes. Grouped into one value because the choice is global: the window
+// carries it between tabs and to the config, the way it carries the demangle
+// setting.
+struct SColumnVisibility
+{
+	QList<int> vHiddenImports;
+	QList<int> vHiddenExports;
+	QList<int> vHiddenModules;
+};
 
 // One opened file = one CModuleTab. It owns the tab's analysis session, its
 // four models, the four-panel splitter layout, and every interaction inside
@@ -77,6 +89,9 @@ public:
 	QByteArray SaveSplitterState() const;
 	void RestoreSplitterState(QByteArray const& rState);
 
+	SColumnVisibility ColumnVisibility() const;
+	void SetColumnVisibility(SColumnVisibility const& rVisibility);
+
 	void SelectModule(std::size_t uModule);
 	QString SelectedSymbolName() const;
 	QString SelectedModulePath() const;
@@ -96,6 +111,9 @@ Q_SIGNALS:
 	void StatusMessage(QString const& rsMessage);
 	// The demangle setting is global; the tab only asks the window to flip it.
 	void DemangleToggleRequested(bool bEnabled);
+	// Likewise for hidden columns: the tab reports the user's choice and the
+	// window is what spreads it to the other tabs and stores it.
+	void ColumnVisibilityChanged(SColumnVisibility const& rVisibility);
 
 private Q_SLOTS:
 
@@ -115,6 +133,7 @@ private Q_SLOTS:
 	void modulesContextMenu(QMenu* pMenu, QModelIndex const& rSourceIndex);
 	void symbolContextMenu(QMenu* pMenu, QModelIndex const& rSourceIndex);
 	void importActivated(QModelIndex const& rSourceIndex);
+	void tableColumnVisibilityChanged();
 
 private:
 	void buildUi();

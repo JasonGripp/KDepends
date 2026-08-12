@@ -1,6 +1,7 @@
 #pragma once
 
 #include "analysisengine.h"
+#include "moduletab.h"
 
 #include <KXmlGuiWindow>
 
@@ -48,6 +49,7 @@ private:
 	bool m_bDemangle = true;
 	QString m_sLastOpenDirectory;
 	QByteArray m_splitterState;
+	SColumnVisibility m_columnVisibility;
 
 public:
 	explicit CMainWindow(QWidget* pParent = nullptr);
@@ -79,6 +81,7 @@ private Q_SLOTS:
 	void tabBusyChanged(bool bBusy);
 	void tabTitleChanged();
 	void tabStatusMessage(QString const& rsMessage);
+	void tabColumnVisibilityChanged(SColumnVisibility const& rVisibility);
 	void lookUpSelectedSymbol();
 	void copyCurrentPath();
 
@@ -87,6 +90,7 @@ private:
 	void setupTabWidget();
 	void readSettings();
 	void writeSettings();
+	void writeColumnVisibility();
 
 	CModuleTab* currentTab() const;
 	CModuleTab* tabAt(int iIndex) const;

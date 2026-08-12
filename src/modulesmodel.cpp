@@ -316,6 +316,17 @@ QVariant CModulesModel::headerData(int iSection, Qt::Orientation eOrientation, i
 {
 	if (eOrientation != Qt::Horizontal)
 		return QVariant();
+
+	// The status column shows only an icon, so its name lives in the tooltip;
+	// that is also what names it in the column chooser.
+	if (iRole == Qt::ToolTipRole)
+	{
+		if (static_cast<EColumn>(iSection) == EColumn::Status)
+			return i18n("Status");
+
+		return QVariant();
+	}
+
 	if (iRole != Qt::DisplayRole)
 		return QVariant();
 

@@ -223,6 +223,7 @@ void CMainWindow::OpenFile(QString const& rsPath)
 	CModuleTab* const pTab = new CModuleTab(*m_pEngine, sPath, m_pTabWidget);
 	pTab->SetDemangleEnabled(m_bDemangle);
 	pTab->RestoreSplitterState(m_splitterState);
+	pTab->SetColumnVisibility(m_columnVisibility);
 
 	connectTab(pTab);
 
@@ -456,6 +457,29 @@ void CMainWindow::tabStatusMessage(QString const& rsMessage)
 	statusBar()->showMessage(rsMessage, 8000);
 }
 
+void CMainWindow::tabColumnVisibilityChanged(SColumnVisibility const& rVisibility)
+{
+	m_columnVisibility = rVisibility;
+
+	// Hiding a column is a statement about the panel, not about one file, so
+	// every open tab follows. The originating tab is skipped because it is
+	// already in this state, and re-applying it there is what would echo.
+	QObject const* const pSender = sender();
+
+	for (int iIndex = 0; iIndex < m_pTabWidget->count(); ++iIndex)
+	{
+		CModuleTab* const pTab = tabAt(iIndex);
+		if (pTab == nullptr || pTab == pSender)
+			continue;
+
+		pTab->SetColumnVisibility(m_columnVisibility);
+	}
+
+	// Written straight away, like the demangle toggle: it is a deliberate
+	// choice, and waiting for shutdown would lose it to a crash.
+	writeColumnVisibility();
+}
+
 void CMainWindow::lookUpSelectedSymbol()
 {
 	CModuleTab* const pTab = currentTab();
@@ -501,6 +525,10 @@ void CMainWindow::readSettings()
 	m_sLastOpenDirectory = stateGroup.readEntry("LastOpenDirectory", QString());
 	m_splitterState = stateGroup.readEntry("SplitterState", QByteArray());
 
+	m_columnVisibility.vHiddenImports = group.readEntry("HiddenImportColumns", QList<int>());
+	m_columnVisibility.vHiddenExports = group.readEntry("HiddenExportColumns", QList<int>());
+	m_columnVisibility.vHiddenModules = group.readEntry("HiddenModuleColumns", QList<int>());
+
 	if (m_pDemangleAction != nullptr)
 		m_pDemangleAction->setChecked(m_bDemangle);
 
@@ -533,6 +561,21 @@ void CMainWindow::writeSettings()
 
 	group.sync();
 	stateGroup.sync();
+
+	writeColumnVisibility();
+}
+
+void CMainWindow::writeColumnVisibility()
+{
+	// The config file rather than the state file: unlike the splitter layout,
+	// a hidden column is only ever the result of the user picking it off a menu.
+	KConfigGroup group(KSharedConfig::openConfig(), QLatin1String(g_pcConfigGroup));
+
+	group.writeEntry("HiddenImportColumns", m_columnVisibility.vHiddenImports);
+	group.writeEntry("HiddenExportColumns", m_columnVisibility.vHiddenExports);
+	group.writeEntry("HiddenModuleColumns", m_columnVisibility.vHiddenModules);
+
+	group.sync();
 }
 
 CModuleTab* CMainWindow::currentTab() const
@@ -570,6 +613,7 @@ void CMainWindow::connectTab(CModuleTab* pTab)
 	connect(pTab, &CModuleTab::BusyChanged, this, &CMainWindow::tabBusyChanged);
 	connect(pTab, &CModuleTab::TitleChanged, this, &CMainWindow::tabTitleChanged);
 	connect(pTab, &CModuleTab::StatusMessage, this, &CMainWindow::tabStatusMessage);
+	connect(pTab, &CModuleTab::ColumnVisibilityChanged, this, &CMainWindow::tabColumnVisibilityChanged);
 	connect(pTab, &CModuleTab::DemangleToggleRequested, this, [this](bool bEnabled)
 		{ m_pDemangleAction->setChecked(bEnabled); });
 }

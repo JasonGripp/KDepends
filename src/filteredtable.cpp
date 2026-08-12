@@ -81,6 +81,9 @@ void CFilteredTable::buildUi()
 	m_pView->verticalHeader()->setDefaultSectionSize(QFontMetrics(m_pView->font()).height() + 6);
 	m_pView->horizontalHeader()->setSectionsMovable(true);
 	m_pView->horizontalHeader()->setStretchLastSection(true);
+	// The header is where users look for a column chooser, so it gets the same
+	// menu the cell menu carries as a submenu.
+	m_pView->horizontalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
 
 	// The filter row lives in its own widget so it can be shown and hidden as a
 	// unit; it stays hidden until the pane's Ctrl+F asks for it.
@@ -112,6 +115,7 @@ void CFilteredTable::buildUi()
 	connect(m_pFilterCloseButton, &QToolButton::clicked, this, [this]()
 		{ SetFilterVisible(false); });
 	connect(m_pView, &QWidget::customContextMenuRequested, this, &CFilteredTable::showContextMenu);
+	connect(m_pView->horizontalHeader(), &QWidget::customContextMenuRequested, this, &CFilteredTable::showHeaderContextMenu);
 	connect(m_pView->selectionModel(), &QItemSelectionModel::currentRowChanged, this, &CFilteredTable::currentRowChanged);
 
 	connect(m_pView, &QAbstractItemView::activated, this, [this](QModelIndex const& rIndex)
@@ -334,7 +338,7 @@ void CFilteredTable::ResizeColumnsToContents()
 	// allowed to claim more than a third of the viewport on an auto-fit.
 	int const iMaxWidth = qMax(g_iMinimumAutoColumnWidth, m_pView->viewport()->width() / 3);
 
-	for (int iColumn = 0; iColumn < m_pProxy->columnCount(); ++iColumn)
+	for (int iColumn = 0; iColumn < columnCount(); ++iColumn)
 	{
 		// The stretch column is sized from what the others leave over, so the
 		// cap would only fight with that.
@@ -357,11 +361,75 @@ void CFilteredTable::SetStretchColumn(int iColumn)
 	m_iStretchColumn = iColumn;
 	m_iStretchTargetWidth = -1;
 
-	// Two columns cannot both absorb the slack, and the last section's built-in
-	// stretch is not the one we want here.
-	m_pView->horizontalHeader()->setStretchLastSection(iColumn < 0);
-
+	updateStretchFallback();
 	fillStretchColumn();
+}
+
+bool CFilteredTable::IsColumnVisible(int iColumn) const
+{
+	if (iColumn < 0 || iColumn >= columnCount())
+		return false;
+
+	return !m_pView->isColumnHidden(iColumn);
+}
+
+void CFilteredTable::SetColumnVisible(int iColumn, bool bVisible)
+{
+	if (iColumn < 0 || iColumn >= columnCount())
+		return;
+	if (m_pView->isColumnHidden(iColumn) != bVisible)
+		return;
+	// An all-hidden table shows nothing to right-click on, so there would be no
+	// way back; the last visible column stays.
+	if (!bVisible && visibleColumnCount() <= 1)
+		return;
+
+	applyColumnHidden(iColumn, !bVisible);
+
+	Q_EMIT ColumnVisibilityChanged();
+}
+
+void CFilteredTable::ShowAllColumns()
+{
+	if (visibleColumnCount() == columnCount())
+		return;
+
+	for (int iColumn = 0; iColumn < columnCount(); ++iColumn)
+	{
+		applyColumnHidden(iColumn, false);
+	}
+
+	Q_EMIT ColumnVisibilityChanged();
+}
+
+QList<int> CFilteredTable::HiddenColumns() const
+{
+	QList<int> vHidden;
+
+	for (int iColumn = 0; iColumn < columnCount(); ++iColumn)
+	{
+		if (m_pView->isColumnHidden(iColumn))
+			vHidden.append(iColumn);
+	}
+
+	return vHidden;
+}
+
+void CFilteredTable::SetHiddenColumns(QList<int> const& rvColumns)
+{
+	int const iColumnCount = columnCount();
+
+	for (int iColumn = 0; iColumn < iColumnCount; ++iColumn)
+	{
+		bool const bHide = rvColumns.contains(iColumn);
+
+		// The floor of one visible column holds however the set arrived — a
+		// hand-edited config must not produce a blank panel.
+		if (bHide && !m_pView->isColumnHidden(iColumn) && visibleColumnCount() <= 1)
+			continue;
+
+		applyColumnHidden(iColumn, bHide);
+	}
 }
 
 void CFilteredTable::filterTextChanged(QString const& rsText)
@@ -390,9 +458,111 @@ void CFilteredTable::showContextMenu(QPoint const& rPoint)
 
 	menu.addSeparator();
 
+	populateColumnsMenu(menu.addMenu(i18n("Colu&mns")));
+
+	menu.addSeparator();
+
 	Q_EMIT ContextMenuRequested(&menu, sourceIndex);
 
 	menu.exec(m_pView->viewport()->mapToGlobal(rPoint));
+}
+
+void CFilteredTable::showHeaderContextMenu(QPoint const& rPoint)
+{
+	// Flat rather than a submenu: on the header the column list is the whole
+	// point of the menu.
+	QMenu menu(this);
+	populateColumnsMenu(&menu);
+
+	menu.exec(m_pView->horizontalHeader()->mapToGlobal(rPoint));
+}
+
+void CFilteredTable::populateColumnsMenu(QMenu* pMenu)
+{
+	if (pMenu == nullptr)
+		return;
+
+	int const iColumnCount = columnCount();
+	int const iVisible = visibleColumnCount();
+
+	for (int iColumn = 0; iColumn < iColumnCount; ++iColumn)
+	{
+		bool const bVisible = !m_pView->isColumnHidden(iColumn);
+
+		QAction* const pAction = pMenu->addAction(columnTitle(iColumn));
+		pAction->setCheckable(true);
+		pAction->setChecked(bVisible);
+		// Greyed out rather than silently ignored, so the one column that cannot
+		// be switched off says so.
+		pAction->setEnabled(!bVisible || iVisible > 1);
+		connect(pAction, &QAction::toggled, this, [this, iColumn](bool bChecked)
+			{ SetColumnVisible(iColumn, bChecked); });
+	}
+
+	pMenu->addSeparator();
+
+	QAction* const pShowAll = pMenu->addAction(i18n("Show All Columns"));
+	pShowAll->setEnabled(iVisible < iColumnCount);
+	connect(pShowAll, &QAction::triggered, this, &CFilteredTable::ShowAllColumns);
+
+	QAction* const pResize = pMenu->addAction(i18n("Fit Columns to Contents"));
+	connect(pResize, &QAction::triggered, this, &CFilteredTable::ResizeColumnsToContents);
+}
+
+int CFilteredTable::columnCount() const
+{
+	// The source model's count, not the proxy's: a stored column set is applied
+	// while the table is still empty, and the proxy has no column mapping to
+	// report until it has rows. Columns map one to one, so the count is the same
+	// once there are any.
+	QAbstractItemModel const* const pModel = m_pProxy->sourceModel();
+	if (pModel == nullptr)
+		return 0;
+
+	return pModel->columnCount();
+}
+
+int CFilteredTable::visibleColumnCount() const
+{
+	int iVisible = 0;
+
+	for (int iColumn = 0; iColumn < columnCount(); ++iColumn)
+	{
+		if (!m_pView->isColumnHidden(iColumn))
+			++iVisible;
+	}
+
+	return iVisible;
+}
+
+void CFilteredTable::applyColumnHidden(int iColumn, bool bHidden)
+{
+	if (m_pView->isColumnHidden(iColumn) != bHidden)
+		m_pView->setColumnHidden(iColumn, bHidden);
+
+	// A column that was hidden before the view ever sized it comes back at zero
+	// width, which reads as still hidden.
+	if (!bHidden && m_pView->columnWidth(iColumn) <= 0)
+		m_pView->resizeColumnToContents(iColumn);
+
+	updateStretchFallback();
+	fillStretchColumn();
+}
+
+QString CFilteredTable::columnTitle(int iColumn) const
+{
+	// The header text of an icon-only column is a single letter or empty, which
+	// names nothing in a menu; those columns carry a readable name in their
+	// header tooltip, so it wins where there is one.
+	QString const sToolTip = m_pProxy->headerData(iColumn, Qt::Horizontal, Qt::ToolTipRole).toString();
+	if (!sToolTip.isEmpty())
+		return sToolTip;
+
+	QString const sTitle = m_pProxy->headerData(iColumn, Qt::Horizontal, Qt::DisplayRole).toString();
+	if (!sTitle.isEmpty())
+		return sTitle;
+
+	return i18nc("name for a table column with no header text", "Column %1", iColumn + 1);
 }
 
 void CFilteredTable::currentRowChanged(QModelIndex const& rCurrent, QModelIndex const& rPrevious)
@@ -468,7 +638,7 @@ void CFilteredTable::fillStretchColumn()
 
 	int iUsed = 0;
 
-	for (int iColumn = 0; iColumn < m_pProxy->columnCount(); ++iColumn)
+	for (int iColumn = 0; iColumn < columnCount(); ++iColumn)
 	{
 		if (iColumn == m_iStretchColumn)
 			continue;
@@ -493,6 +663,16 @@ void CFilteredTable::applyStretchTarget()
 	m_bAdjustingStretch = false;
 }
 
+void CFilteredTable::updateStretchFallback()
+{
+	// Two columns cannot both absorb the slack, so the last section's built-in
+	// stretch is only wanted when the designated stretch column is not there to
+	// do the job — either none was set, or the user has hidden it.
+	bool const bStretchColumnUsable = m_iStretchColumn >= 0 && !m_pView->isColumnHidden(m_iStretchColumn);
+
+	m_pView->horizontalHeader()->setStretchLastSection(!bStretchColumnUsable);
+}
+
 QString CFilteredTable::selectionAsText() const
 {
 	QItemSelectionModel const* const pSelection = m_pView->selectionModel();
@@ -506,7 +686,7 @@ QString CFilteredTable::selectionAsText() const
 	std::sort(vRows.begin(), vRows.end(), [](QModelIndex const& rLeft, QModelIndex const& rRight)
 		{ return rLeft.row() < rRight.row(); });
 
-	int const iColumnCount = m_pProxy->columnCount();
+	int const iColumnCount = columnCount();
 
 	QStringList vLines;
 	vLines.reserve(vRows.size());
