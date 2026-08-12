@@ -6,10 +6,13 @@
 #include <QWidget>
 
 class QAbstractItemModel;
+class QEvent;
 class QLabel;
 class QLineEdit;
 class QMenu;
+class QObject;
 class QPoint;
+class QResizeEvent;
 class QShortcut;
 class QSortFilterProxyModel;
 class QTableView;
@@ -34,12 +37,20 @@ private:
 	QToolButton* m_pFilterCloseButton = nullptr;
 	QShortcut* m_pCloseFilterShortcut = nullptr;
 	int m_iFilterColumn = -1;
+	int m_iStretchColumn = -1;
+	// The width the stretch column wants, kept apart from its actual width so a
+	// run of shrinks down to the floor does not lose the excess and come back
+	// too wide when the window grows again.
+	int m_iStretchTargetWidth = -1;
 	bool m_bAutoResize = true;
 	bool m_bFirstPopulation = true;
+	bool m_bAdjustingStretch = false;
 
 public:
 	explicit CFilteredTable(QWidget* pParent = nullptr);
 	~CFilteredTable() override;
+
+	bool eventFilter(QObject* pWatched, QEvent* pEvent) override;
 
 	void SetSourceModel(QAbstractItemModel* pModel);
 	QAbstractItemModel* SourceModel() const;
@@ -67,6 +78,7 @@ public:
 	void SelectAllRows();
 	void ResizeColumnsToContents();
 	void SetAutoResizeColumns(bool bEnabled);
+	void SetStretchColumn(int iColumn);
 
 Q_SIGNALS:
 
@@ -81,9 +93,13 @@ private Q_SLOTS:
 	void showContextMenu(QPoint const& rPoint);
 	void currentRowChanged(QModelIndex const& rCurrent, QModelIndex const& rPrevious);
 	void rowsPopulated();
+	void sectionResized(int iLogicalIndex, int iOldSize, int iNewSize);
 
 private:
 	void buildUi();
 	void buildShortcuts();
 	QString selectionAsText() const;
+	void absorbViewportResize(QResizeEvent const* pEvent);
+	void fillStretchColumn();
+	void applyStretchTarget();
 };

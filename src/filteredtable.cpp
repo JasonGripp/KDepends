@@ -7,6 +7,7 @@
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
+#include <QEvent>
 #include <QFontMetrics>
 #include <QHBoxLayout>
 #include <QHeaderView>
@@ -18,8 +19,10 @@
 #include <QMenu>
 #include <QModelIndex>
 #include <QModelIndexList>
+#include <QObject>
 #include <QPoint>
 #include <QRegularExpression>
+#include <QResizeEvent>
 #include <QShortcut>
 #include <QSortFilterProxyModel>
 #include <QStringList>
@@ -34,6 +37,10 @@ namespace {
 // Floor for the auto-fit column cap, so a very narrow panel still shows
 // usable columns.
 constexpr int g_iMinimumAutoColumnWidth = 120;
+
+// Floor for the stretch column, so squeezing the panel leaves it readable and
+// hands the overflow to a horizontal scrollbar instead.
+constexpr int g_iMinimumStretchColumnWidth = 80;
 } //namespace
 
 CFilteredTable::CFilteredTable(QWidget* pParent)
@@ -109,6 +116,11 @@ void CFilteredTable::buildUi()
 
 	connect(m_pView, &QAbstractItemView::activated, this, [this](QModelIndex const& rIndex)
 		{ Q_EMIT Activated(m_pProxy->mapToSource(rIndex)); });
+	connect(m_pView->horizontalHeader(), &QHeaderView::sectionResized, this, &CFilteredTable::sectionResized);
+
+	// The viewport, not the view: its width is what the columns actually share,
+	// so its resizes already account for a vertical scrollbar coming and going.
+	m_pView->viewport()->installEventFilter(this);
 }
 
 void CFilteredTable::buildShortcuts()
@@ -136,6 +148,14 @@ void CFilteredTable::buildShortcuts()
 	m_pCloseFilterShortcut->setEnabled(false);
 	connect(m_pCloseFilterShortcut, &QShortcut::activated, this, [this]()
 		{ SetFilterVisible(false); });
+}
+
+bool CFilteredTable::eventFilter(QObject* pWatched, QEvent* pEvent)
+{
+	if (pWatched == m_pView->viewport() && pEvent->type() == QEvent::Resize)
+		absorbViewportResize(static_cast<QResizeEvent const*>(pEvent));
+
+	return QWidget::eventFilter(pWatched, pEvent);
 }
 
 void CFilteredTable::SetSourceModel(QAbstractItemModel* pModel)
@@ -316,14 +336,32 @@ void CFilteredTable::ResizeColumnsToContents()
 
 	for (int iColumn = 0; iColumn < m_pProxy->columnCount(); ++iColumn)
 	{
+		// The stretch column is sized from what the others leave over, so the
+		// cap would only fight with that.
+		if (iColumn == m_iStretchColumn)
+			continue;
 		if (m_pView->columnWidth(iColumn) > iMaxWidth)
 			m_pView->setColumnWidth(iColumn, iMaxWidth);
 	}
+
+	fillStretchColumn();
 }
 
 void CFilteredTable::SetAutoResizeColumns(bool bEnabled)
 {
 	m_bAutoResize = bEnabled;
+}
+
+void CFilteredTable::SetStretchColumn(int iColumn)
+{
+	m_iStretchColumn = iColumn;
+	m_iStretchTargetWidth = -1;
+
+	// Two columns cannot both absorb the slack, and the last section's built-in
+	// stretch is not the one we want here.
+	m_pView->horizontalHeader()->setStretchLastSection(iColumn < 0);
+
+	fillStretchColumn();
 }
 
 void CFilteredTable::filterTextChanged(QString const& rsText)
@@ -375,6 +413,84 @@ void CFilteredTable::rowsPopulated()
 
 	m_bFirstPopulation = false;
 	ResizeColumnsToContents();
+}
+
+void CFilteredTable::sectionResized(int iLogicalIndex, int iOldSize, int iNewSize)
+{
+	Q_UNUSED(iOldSize)
+
+	if (iLogicalIndex != m_iStretchColumn)
+		return;
+	// Only a resize we did not cause is the user stating a new preferred width.
+	if (m_bAdjustingStretch)
+		return;
+
+	m_iStretchTargetWidth = iNewSize;
+}
+
+void CFilteredTable::absorbViewportResize(QResizeEvent const* pEvent)
+{
+	if (m_iStretchColumn < 0)
+		return;
+	if (m_bAdjustingStretch)
+		return;
+	if (m_pView->isColumnHidden(m_iStretchColumn))
+		return;
+
+	int const iOldWidth = pEvent->oldSize().width();
+	int const iNewWidth = pEvent->size().width();
+
+	// The first layout has no previous width to grow from, so fit the column to
+	// what is left instead of shifting it by a meaningless delta.
+	if (iOldWidth <= 0)
+	{
+		fillStretchColumn();
+		return;
+	}
+
+	int const iDelta = iNewWidth - iOldWidth;
+	if (iDelta == 0)
+		return;
+
+	if (m_iStretchTargetWidth < 0)
+		m_iStretchTargetWidth = m_pView->columnWidth(m_iStretchColumn);
+
+	m_iStretchTargetWidth += iDelta;
+	applyStretchTarget();
+}
+
+void CFilteredTable::fillStretchColumn()
+{
+	if (m_iStretchColumn < 0)
+		return;
+	if (m_pView->isColumnHidden(m_iStretchColumn))
+		return;
+
+	int iUsed = 0;
+
+	for (int iColumn = 0; iColumn < m_pProxy->columnCount(); ++iColumn)
+	{
+		if (iColumn == m_iStretchColumn)
+			continue;
+		if (m_pView->isColumnHidden(iColumn))
+			continue;
+
+		iUsed += m_pView->columnWidth(iColumn);
+	}
+
+	m_iStretchTargetWidth = m_pView->viewport()->width() - iUsed;
+	applyStretchTarget();
+}
+
+void CFilteredTable::applyStretchTarget()
+{
+	int const iWidth = qMax(g_iMinimumStretchColumnWidth, m_iStretchTargetWidth);
+
+	// Widening the column can raise a horizontal scrollbar, which resizes the
+	// viewport right back at us; the guard keeps that from feeding on itself.
+	m_bAdjustingStretch = true;
+	m_pView->setColumnWidth(m_iStretchColumn, iWidth);
+	m_bAdjustingStretch = false;
 }
 
 QString CFilteredTable::selectionAsText() const

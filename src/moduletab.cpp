@@ -73,7 +73,7 @@ void CModuleTab::buildUi()
 
 	m_pTreeView = new QTreeView(this);
 	m_pTreeView->setModel(m_pTreeModel);
-	m_pTreeView->setHeaderHidden(false);
+	m_pTreeView->setHeaderHidden(true);
 	m_pTreeView->setUniformRowHeights(true);
 	m_pTreeView->setAlternatingRowColors(true);
 	m_pTreeView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -125,6 +125,12 @@ void CModuleTab::buildUi()
 	m_pImportsTable->View()->setColumnWidth(static_cast<int>(CImportsModel::EColumn::Status), 24);
 	m_pExportsTable->View()->setColumnWidth(static_cast<int>(CExportsModel::EColumn::Status), 24);
 	m_pModulesTable->View()->setColumnWidth(static_cast<int>(CModulesModel::EColumn::Status), 24);
+
+	// Symbol names are the one column whose useful width has no upper bound, so
+	// they take the panel's spare width and the fixed-shape columns beside them
+	// keep whatever the user or the auto-fit gave them.
+	m_pImportsTable->SetStretchColumn(static_cast<int>(CImportsModel::EColumn::Symbol));
+	m_pExportsTable->SetStretchColumn(static_cast<int>(CExportsModel::EColumn::Symbol));
 
 	updateStatusLabel();
 }

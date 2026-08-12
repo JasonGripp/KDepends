@@ -199,7 +199,7 @@ QVariant CExportsModel::headerData(int iSection, Qt::Orientation eOrientation, i
 
 	switch (static_cast<EColumn>(iSection))
 	{
-	case EColumn::Status: return QString();
+	case EColumn::Status: return i18n("E");
 	case EColumn::Symbol: return i18n("Symbol");
 	case EColumn::Version: return i18n("Version");
 	case EColumn::Type: return i18n("Type");
