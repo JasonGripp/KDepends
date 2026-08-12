@@ -3,7 +3,7 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-project(kdepends VERSION 0.1 LANGUAGES CXX)
+project(kdepends VERSION 0.1.0 LANGUAGES CXX)
 
 set(KF_MIN_VERSION "6.0.0")
 set(QT_MIN_VERSION "6.5.0")
