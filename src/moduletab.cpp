@@ -317,6 +317,26 @@ void CModuleTab::SetColumnVisibility(SColumnVisibility const& rVisibility)
 	m_pModulesTable->SetHiddenColumns(rVisibility.vHiddenModules);
 }
 
+SColumnWidths CModuleTab::ColumnWidths() const
+{
+	SColumnWidths widths;
+
+	widths.vImports = m_pImportsTable->ColumnWidths();
+	widths.vExports = m_pExportsTable->ColumnWidths();
+	widths.vModules = m_pModulesTable->ColumnWidths();
+
+	return widths;
+}
+
+void CModuleTab::SetColumnWidths(SColumnWidths const& rWidths)
+{
+	// After SetColumnVisibility, so a width stored for a column the user has
+	// since hidden is skipped rather than handed to a visible column.
+	m_pImportsTable->SetColumnWidths(rWidths.vImports);
+	m_pExportsTable->SetColumnWidths(rWidths.vExports);
+	m_pModulesTable->SetColumnWidths(rWidths.vModules);
+}
+
 void CModuleTab::SelectModule(std::size_t uModule)
 {
 	if (uModule == g_uInvalidIndex)

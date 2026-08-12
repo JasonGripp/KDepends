@@ -227,6 +227,7 @@ void CMainWindow::OpenFile(QString const& rsPath)
 	pTab->SetDemangleEnabled(m_bDemangle);
 	pTab->RestoreSplitterState(m_splitterState);
 	pTab->SetColumnVisibility(m_columnVisibility);
+	pTab->SetColumnWidths(m_columnWidths);
 
 	connectTab(pTab);
 
@@ -528,6 +529,10 @@ void CMainWindow::readSettings()
 	m_sLastOpenDirectory = stateGroup.readEntry("LastOpenDirectory", QString());
 	m_splitterState = stateGroup.readEntry("SplitterState", QByteArray());
 
+	m_columnWidths.vImports = stateGroup.readEntry("ImportColumnWidths", QList<int>());
+	m_columnWidths.vExports = stateGroup.readEntry("ExportColumnWidths", QList<int>());
+	m_columnWidths.vModules = stateGroup.readEntry("ModuleColumnWidths", QList<int>());
+
 	m_columnVisibility.vHiddenImports = group.readEntry("HiddenImportColumns", QList<int>());
 	m_columnVisibility.vHiddenExports = group.readEntry("HiddenExportColumns", QList<int>());
 	m_columnVisibility.vHiddenModules = group.readEntry("HiddenModuleColumns", QList<int>());
@@ -552,9 +557,19 @@ void CMainWindow::writeSettings()
 
 	CModuleTab const* const pTab = currentTab();
 	if (pTab != nullptr)
+	{
 		m_splitterState = pTab->SaveSplitterState();
+		m_columnWidths = pTab->ColumnWidths();
+	}
 
 	stateGroup.writeEntry("SplitterState", m_splitterState);
+
+	// Alongside the splitter layout rather than with the hidden set: a column
+	// width is dragged into place or handed out by the auto-fit, so it is
+	// observed layout, not a setting the user picked off a menu.
+	stateGroup.writeEntry("ImportColumnWidths", m_columnWidths.vImports);
+	stateGroup.writeEntry("ExportColumnWidths", m_columnWidths.vExports);
+	stateGroup.writeEntry("ModuleColumnWidths", m_columnWidths.vModules);
 
 	if (m_pRecentFilesAction != nullptr)
 	{

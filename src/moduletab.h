@@ -38,6 +38,16 @@ struct SColumnVisibility
 	QList<int> vHiddenModules;
 };
 
+// The width of every column of a tab's three tables, in source column order.
+// Global for the same reason the hidden set is: the window carries one layout
+// between tabs and to the config.
+struct SColumnWidths
+{
+	QList<int> vImports;
+	QList<int> vExports;
+	QList<int> vModules;
+};
+
 // One opened file = one CModuleTab. It owns the tab's analysis session, its
 // four models, the four-panel splitter layout, and every interaction inside
 // the tab. It is the only class that connects engine signals to models.
@@ -94,6 +104,9 @@ public:
 
 	SColumnVisibility ColumnVisibility() const;
 	void SetColumnVisibility(SColumnVisibility const& rVisibility);
+
+	SColumnWidths ColumnWidths() const;
+	void SetColumnWidths(SColumnWidths const& rWidths);
 
 	void SelectModule(std::size_t uModule);
 	QString SelectedSymbolName() const;

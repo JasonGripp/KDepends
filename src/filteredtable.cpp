@@ -435,6 +435,50 @@ void CFilteredTable::SetHiddenColumns(QList<int> const& rvColumns)
 	}
 }
 
+QList<int> CFilteredTable::ColumnWidths() const
+{
+	int const iColumnCount = columnCount();
+
+	QList<int> vWidths;
+	vWidths.reserve(iColumnCount);
+
+	for (int iColumn = 0; iColumn < iColumnCount; ++iColumn)
+	{
+		// A hidden section's size reads as zero; the header keeps its real width
+		// internally for when it comes back, and the hidden set is stored
+		// separately, so there is nothing to preserve here.
+		vWidths.append(m_pView->columnWidth(iColumn));
+	}
+
+	return vWidths;
+}
+
+void CFilteredTable::SetColumnWidths(QList<int> const& rvWidths)
+{
+	if (rvWidths.isEmpty())
+		return;
+
+	int const iColumnCount = columnCount();
+
+	for (int iColumn = 0; iColumn < iColumnCount; ++iColumn)
+	{
+		// Past the end of the stored list is a column that did not exist when it
+		// was written, and zero is one that was hidden; both keep the width the
+		// view gives them.
+		int const iWidth = iColumn < rvWidths.size() ? rvWidths.at(iColumn) : 0;
+		if (iWidth <= 0)
+			continue;
+
+		m_pView->setColumnWidth(iColumn, iWidth);
+	}
+
+	// Stored widths are the user's, so the one-shot auto-fit on first population
+	// must not overwrite them. The stretch column needs no special handling: the
+	// resize above already seeded its target through sectionResized(), and the
+	// first viewport resize fits it to what the other columns leave over.
+	m_bFirstPopulation = false;
+}
+
 void CFilteredTable::filterTextChanged(QString const& rsText)
 {
 	// Escaped so a user typing '.' or '*' filters literally.

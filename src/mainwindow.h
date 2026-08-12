@@ -53,6 +53,7 @@ private:
 	QString m_sLastOpenDirectory;
 	QByteArray m_splitterState;
 	SColumnVisibility m_columnVisibility;
+	SColumnWidths m_columnWidths;
 
 public:
 	explicit CMainWindow(QWidget* pParent = nullptr);

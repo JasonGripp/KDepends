@@ -93,6 +93,11 @@ public:
 	QList<int> HiddenColumns() const;
 	void SetHiddenColumns(QList<int> const& rvColumns);
 
+	// One width per source column, in column order. A hidden column reports 0,
+	// which restoring skips.
+	QList<int> ColumnWidths() const;
+	void SetColumnWidths(QList<int> const& rvWidths);
+
 Q_SIGNALS:
 
 	void ContextMenuRequested(QMenu* pMenu, QModelIndex const& rSourceIndex);
