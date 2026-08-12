@@ -116,6 +116,7 @@ private Q_SLOTS:
 	void currentRowChanged(QModelIndex const& rCurrent, QModelIndex const& rPrevious);
 	void rowsPopulated();
 	void sectionResized(int iLogicalIndex, int iOldSize, int iNewSize);
+	void horizontalScrollRangeChanged();
 
 private:
 	void buildUi();

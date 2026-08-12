@@ -7,6 +7,7 @@
 
 #include <QAbstractItemModel>
 #include <QAbstractItemView>
+#include <QAbstractSlider>
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -26,6 +27,7 @@
 #include <QPoint>
 #include <QRegularExpression>
 #include <QResizeEvent>
+#include <QScrollBar>
 #include <QShortcut>
 #include <QSortFilterProxyModel>
 #include <QStringList>
@@ -79,6 +81,10 @@ void CFilteredTable::buildUi()
 	m_pView->sortByColumn(0, Qt::AscendingOrder);
 	m_pView->setAlternatingRowColors(true);
 	m_pView->setWordWrap(false);
+	// Pixel-granular rather than the default column at a time: a wide column such
+	// as a demangled symbol or a full path is otherwise unreadable, because every
+	// step of the scrollbar jumps clean past it.
+	m_pView->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 	m_pView->setContextMenuPolicy(Qt::CustomContextMenu);
 	m_pView->verticalHeader()->setVisible(false);
 	m_pView->verticalHeader()->setDefaultSectionSize(QFontMetrics(m_pView->font()).height() + 6);
@@ -124,6 +130,11 @@ void CFilteredTable::buildUi()
 	connect(m_pView, &QAbstractItemView::activated, this, [this](QModelIndex const& rIndex)
 		{ Q_EMIT Activated(m_pProxy->mapToSource(rIndex)); });
 	connect(m_pView->horizontalHeader(), &QHeaderView::sectionResized, this, &CFilteredTable::sectionResized);
+	// The view recomputes the pixel-mode step from the header's default section
+	// size whenever its geometry changes, which puts the column-sized jump
+	// straight back; re-applying it on every range change is what keeps it gone.
+	connect(m_pView->horizontalScrollBar(), &QAbstractSlider::rangeChanged, this, &CFilteredTable::horizontalScrollRangeChanged);
+	horizontalScrollRangeChanged();
 
 	// The viewport, not the view: its width is what the columns actually share,
 	// so its resizes already account for a vertical scrollbar coming and going.
@@ -630,6 +641,13 @@ void CFilteredTable::rowsPopulated()
 
 	m_bFirstPopulation = false;
 	ResizeColumnsToContents();
+}
+
+void CFilteredTable::horizontalScrollRangeChanged()
+{
+	// A text-height step, so a wheel notch or an arrow click moves a readable
+	// amount and follows the font's DPI the way the row height does.
+	m_pView->horizontalScrollBar()->setSingleStep(QFontMetrics(m_pView->font()).height());
 }
 
 void CFilteredTable::sectionResized(int iLogicalIndex, int iOldSize, int iNewSize)
