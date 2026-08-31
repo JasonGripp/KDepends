@@ -1,4 +1,4 @@
-# KDepends
+# <img src="src/icons/sc-apps-kdepends.svg" alt="KDepends icon" width="40" height="40" align="top"/> KDepends
 
 A native KDE application for inspecting the dynamic dependencies of Linux ELF
 binaries — the Linux counterpart to the of the
@@ -16,6 +16,8 @@ Open an executable or shared library and KDepends shows, in one window:
 
 KDepends is a static inspector. It reads bytes; it never loads, maps, or
 executes the file you point it at.
+
+![The KDepends main window: dependency tree, imports, exports, and the flattened modules table](KDepends.png)
 
 ## Features
 
