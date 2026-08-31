@@ -31,8 +31,8 @@ int main(int iArgc, char** ppcArgv)
 		KAboutLicense::MIT,
 		i18n("Copyright © 2026 Jason Gripp"),
 		i18n("A KDE recreation of Dependency Walker for Linux ELF binaries."),
-		QStringLiteral("https://github.com/kdepends/kdepends"),
-		QStringLiteral("https://github.com/kdepends/kdepends/issues"));
+		QStringLiteral("https://github.com/JasonGripp/KDepends"),
+		QStringLiteral("https://github.com/JasonGripp/KDepends/issues"));
 
 	// KAboutData otherwise derives this from the homepage host, giving
 	// "com.github.kdepends"; the installed entry is kdepends.desktop, so say so
