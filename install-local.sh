@@ -8,7 +8,7 @@
 # The build type is deliberately not configurable: this script exists to install
 # the copy you actually run, so it is always an optimised release. Use the
 # build/ tree that development-guide.md documents for debug work. That is also
-# why this uses its own build directory — the ~/.local prefix set here must
+# why this uses its own build directory. The ~/.local prefix set here must
 # never clobber the /usr configuration in build/.
 
 set -euo pipefail
@@ -36,7 +36,7 @@ case "${1:-}" in
 		;;
 esac
 
-# Release gives -O3 -DNDEBUG; link-time optimisation is worth having here
+# Release gives -O3 -DNDEBUG. Link-time optimisation is worthwhile here
 # because the analysis core is split across many small translation units whose
 # hot paths only inline across them with LTO.
 echo "==> Configuring ${BUILD_TYPE} build, prefix ${PREFIX}"

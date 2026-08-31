@@ -7,11 +7,8 @@
 #include <cstdint>
 #include <string>
 
-// Self-contained description of the ELF on-disk format. Deliberately does not
-// depend on <elf.h>: the aggregates below are widened in-memory holders, not
-// memory-mapped overlays. binaryreader reads either the 32-bit or the 64-bit
-// on-disk layout field by field and fills the same struct, so nothing here is
-// packed and nothing is ever reinterpret_cast over file bytes.
+// Self-contained ELF disk-format definitions independent of <elf.h>. These
+// widened holders are filled field by field and never overlay file bytes.
 
 using ElfAddress = std::uint64_t;
 using ElfOffset = std::uint64_t;
@@ -54,7 +51,7 @@ enum class EElfType : std::uint16_t
 	Core = 4,
 };
 
-// Unknown values are preserved as-is; elfparser renders unrecognised machines
+// Unknown values are preserved as-is. elfparser renders unrecognised machines
 // as "Unknown (0x...)".
 enum class EElfMachine : std::uint16_t
 {
@@ -219,7 +216,7 @@ enum class ESectionIndex : std::uint16_t
 };
 
 // The high bit (0x8000) of a .gnu.version entry is the "hidden" flag and is
-// masked off before comparison; see g_uVersionHiddenFlag.
+// masked off before comparison. See g_uVersionHiddenFlag.
 enum class EVersionIndex : std::uint16_t
 {
 	Local = 0,
@@ -263,7 +260,6 @@ inline constexpr std::size_t g_uVerdauxSize = 8;
 inline constexpr std::size_t g_uVerneedSize = 16;
 inline constexpr std::size_t g_uVernauxSize = 16;
 
-// The 16 identification bytes.
 struct SElfIdent
 {
 	std::uint8_t uMagic[4] = {};
@@ -274,7 +270,7 @@ struct SElfIdent
 	std::uint8_t uAbiVersion = 0;
 };
 
-// Widened file header; fields are named after their e_* counterparts.
+// Widened file header with fields named after their e_* counterparts.
 struct SElfHeader
 {
 	SElfIdent ident = {};
@@ -296,7 +292,7 @@ struct SElfHeader
 struct SProgramHeader
 {
 	ESegmentType eType = ESegmentType::Null;
-	// The 32-bit layout stores this after p_align; the reader normalises it.
+	// The 32-bit layout stores this after p_align. The reader normalises it.
 	std::uint32_t uFlags = 0;
 	ElfOffset uOffset = 0;
 	ElfAddress uVirtualAddress = 0;
@@ -319,7 +315,7 @@ struct SSectionHeader
 	ElfSize uAddressAlign = 0;
 	ElfSize uEntrySize = 0;
 	// Resolved section name, filled by elfparser from the section-name string
-	// table; empty when unavailable.
+	// table. Empty when unavailable.
 	std::string sName;
 };
 

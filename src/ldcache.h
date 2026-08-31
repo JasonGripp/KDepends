@@ -56,7 +56,7 @@ struct SLdCacheEntry
 };
 
 // Loaded once per process and queried once per needed name per module. A
-// missing, unreadable or malformed cache is not an error: the object simply
+// missing, unreadable or malformed cache is not an error. The object simply
 // reports no hits and the search falls through to the default directories.
 class CLdCache
 {

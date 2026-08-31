@@ -53,7 +53,7 @@ bool IsAcceptableLibcType(std::int32_t iFlags)
 	return iType == static_cast<std::int32_t>(ELdCacheFlags::Elf)
 		|| iType == static_cast<std::int32_t>(ELdCacheFlags::ElfLibc6);
 }
-} //namespace
+}
 
 CLdCache::CLdCache()
 {
@@ -95,8 +95,8 @@ bool CLdCache::Load(std::string const& rsPath)
 			return false;
 		}
 
-		// The common case on glibc systems is an old header with a new-format
-		// cache appended; when both are present the new format wins.
+		// Glibc commonly appends a new-format cache to an old header. Prefer the
+		// new format when both are present.
 		std::vector<SLdCacheEntry> vOldEntries = std::move(m_vEntries);
 		m_vEntries.clear();
 

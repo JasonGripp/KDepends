@@ -46,7 +46,7 @@ constexpr int g_iMinimumAutoColumnWidth = 120;
 // Floor for the stretch column, so squeezing the panel leaves it readable and
 // hands the overflow to a horizontal scrollbar instead.
 constexpr int g_iMinimumStretchColumnWidth = 80;
-} //namespace
+}
 
 CFilteredTable::CFilteredTable(QWidget* pParent)
 : QWidget(pParent)
@@ -75,15 +75,11 @@ void CFilteredTable::buildUi()
 	m_pView->setSelectionBehavior(QAbstractItemView::SelectRows);
 	m_pView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 	m_pView->setSortingEnabled(true);
-	// Explicit, because the header's default sort indicator order is not
-	// guaranteed and an unspecified initial order makes the first column's
-	// grouping look arbitrary.
+	// Choose a deterministic initial order instead of relying on Qt's default.
 	m_pView->sortByColumn(0, Qt::AscendingOrder);
 	m_pView->setAlternatingRowColors(true);
 	m_pView->setWordWrap(false);
-	// Pixel-granular rather than the default column at a time: a wide column such
-	// as a demangled symbol or a full path is otherwise unreadable, because every
-	// step of the scrollbar jumps clean past it.
+	// Per-pixel scrolling keeps wide symbols and paths readable.
 	m_pView->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 	m_pView->setContextMenuPolicy(Qt::CustomContextMenu);
 	m_pView->verticalHeader()->setVisible(false);
@@ -94,8 +90,6 @@ void CFilteredTable::buildUi()
 	// menu the cell menu carries as a submenu.
 	m_pView->horizontalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
 
-	// The filter row lives in its own widget so it can be shown and hidden as a
-	// unit; it stays hidden until the pane's Ctrl+F asks for it.
 	m_pFilterRow = new QWidget(this);
 
 	m_pFilterLabel = new QLabel(i18n("Search:"), m_pFilterRow);
@@ -132,12 +126,12 @@ void CFilteredTable::buildUi()
 	connect(m_pView->horizontalHeader(), &QHeaderView::sectionResized, this, &CFilteredTable::sectionResized);
 	// The view recomputes the pixel-mode step from the header's default section
 	// size whenever its geometry changes, which puts the column-sized jump
-	// straight back; re-applying it on every range change is what keeps it gone.
+	// straight back. Reapplying it on every range change preserves pixel steps.
 	connect(m_pView->horizontalScrollBar(), &QAbstractSlider::rangeChanged, this, &CFilteredTable::horizontalScrollRangeChanged);
 	horizontalScrollRangeChanged();
 
-	// The viewport, not the view: its width is what the columns actually share,
-	// so its resizes already account for a vertical scrollbar coming and going.
+	// Track the viewport because its width already accounts for a vertical
+	// scrollbar appearing or disappearing.
 	m_pView->viewport()->installEventFilter(this);
 }
 
@@ -153,14 +147,8 @@ void CFilteredTable::buildShortcuts()
 	pSelectAll->setContext(Qt::WidgetWithChildrenShortcut);
 	connect(pSelectAll, &QShortcut::activated, this, &CFilteredTable::SelectAllRows);
 
-	// Ctrl+F is deliberately absent here: the window-level Find action owns it
-	// and routes it to whichever panel has focus, so a panel-scoped shortcut
-	// would only make it ambiguous.
-	//
-	// Escape is scoped to the whole panel, not just the box, so it closes an
-	// open filter whether the user is still typing or back in the table. It is
-	// disabled while the filter is hidden, so a disabled shortcut does not
-	// swallow Escape from anything else.
+	// The window-level Find action routes Ctrl+F to the focused panel.
+	// Escape covers the panel but is disabled while the filter is hidden.
 	m_pCloseFilterShortcut = new QShortcut(QKeySequence(Qt::Key_Escape), this);
 	m_pCloseFilterShortcut->setContext(Qt::WidgetWithChildrenShortcut);
 	m_pCloseFilterShortcut->setEnabled(false);
@@ -276,7 +264,7 @@ void CFilteredTable::SetFilterVisible(bool bVisible)
 
 void CFilteredTable::ShowFilter()
 {
-	// Deliberately not a toggle: on an already-open filter this just puts the
+	// This is not a toggle. On an already-open filter it puts the
 	// cursor back in the box. Escape and the close button are what shut it.
 	SetFilterVisible(true);
 }
@@ -401,7 +389,7 @@ void CFilteredTable::SetColumnVisible(int iColumn, bool bVisible)
 	if (m_pView->isColumnHidden(iColumn) != bVisible)
 		return;
 	// An all-hidden table shows nothing to right-click on, so there would be no
-	// way back; the last visible column stays.
+	// way back. Keep the last visible column.
 	if (!bVisible && visibleColumnCount() <= 1)
 		return;
 
@@ -444,8 +432,7 @@ void CFilteredTable::SetHiddenColumns(QList<int> const& rvColumns)
 	{
 		bool const bHide = rvColumns.contains(iColumn);
 
-		// The floor of one visible column holds however the set arrived — a
-		// hand-edited config must not produce a blank panel.
+		// Preserve one visible column even when the stored configuration was edited.
 		if (bHide && !m_pView->isColumnHidden(iColumn) && visibleColumnCount() <= 1)
 			continue;
 
@@ -462,7 +449,7 @@ QList<int> CFilteredTable::ColumnWidths() const
 
 	for (int iColumn = 0; iColumn < iColumnCount; ++iColumn)
 	{
-		// A hidden section's size reads as zero; the header keeps its real width
+		// A hidden section's size reads as zero. The header keeps its real width
 		// internally for when it comes back, and the hidden set is stored
 		// separately, so there is nothing to preserve here.
 		vWidths.append(m_pView->columnWidth(iColumn));
@@ -481,7 +468,7 @@ void CFilteredTable::SetColumnWidths(QList<int> const& rvWidths)
 	for (int iColumn = 0; iColumn < iColumnCount; ++iColumn)
 	{
 		// Past the end of the stored list is a column that did not exist when it
-		// was written, and zero is one that was hidden; both keep the width the
+		// was written, and zero represents a hidden column. Both keep the width the
 		// view gives them.
 		int const iWidth = iColumn < rvWidths.size() ? rvWidths.at(iColumn) : 0;
 		if (iWidth <= 0)
@@ -490,10 +477,8 @@ void CFilteredTable::SetColumnWidths(QList<int> const& rvWidths)
 		m_pView->setColumnWidth(iColumn, iWidth);
 	}
 
-	// Stored widths are the user's, so the one-shot auto-fit on first population
-	// must not overwrite them. The stretch column needs no special handling: the
-	// resize above already seeded its target through sectionResized(), and the
-	// first viewport resize fits it to what the other columns leave over.
+	// Do not let the first-population auto-fit overwrite stored widths. The
+	// viewport resize will fit the stretch column around the restored widths.
 	m_bFirstPopulation = false;
 }
 
@@ -534,8 +519,6 @@ void CFilteredTable::showContextMenu(QPoint const& rPoint)
 
 void CFilteredTable::showHeaderContextMenu(QPoint const& rPoint)
 {
-	// Flat rather than a submenu: on the header the column list is the whole
-	// point of the menu.
 	QMenu menu(this);
 	populateColumnsMenu(&menu);
 
@@ -576,7 +559,7 @@ void CFilteredTable::populateColumnsMenu(QMenu* pMenu)
 
 int CFilteredTable::columnCount() const
 {
-	// The source model's count, not the proxy's: a stored column set is applied
+	// Use the source model's count because a stored column set is applied
 	// while the table is still empty, and the proxy has no column mapping to
 	// report until it has rows. Columns map one to one, so the count is the same
 	// once there are any.
@@ -617,7 +600,7 @@ void CFilteredTable::applyColumnHidden(int iColumn, bool bHidden)
 QString CFilteredTable::columnTitle(int iColumn) const
 {
 	// The header text of an icon-only column is a single letter or empty, which
-	// names nothing in a menu; those columns carry a readable name in their
+	// names nothing in a menu. Those columns carry a readable name in their
 	// header tooltip, so it wins where there is one.
 	QString const sToolTip = m_pProxy->headerData(iColumn, Qt::Horizontal, Qt::ToolTipRole).toString();
 	if (!sToolTip.isEmpty())
@@ -729,7 +712,7 @@ void CFilteredTable::applyStretchTarget()
 	int const iWidth = qMax(g_iMinimumStretchColumnWidth, m_iStretchTargetWidth);
 
 	// Widening the column can raise a horizontal scrollbar, which resizes the
-	// viewport right back at us; the guard keeps that from feeding on itself.
+	// viewport again. The guard prevents recursive resize handling.
 	m_bAdjustingStretch = true;
 	m_pView->setColumnWidth(m_iStretchColumn, iWidth);
 	m_bAdjustingStretch = false;
@@ -737,10 +720,8 @@ void CFilteredTable::applyStretchTarget()
 
 void CFilteredTable::updateStretchFallback()
 {
-	// Two columns cannot both absorb the slack, so the last section's built-in
-	// stretch is only wanted when the designated stretch column is not there to
-	// do the job — either none was set, or the user has hidden it — and the
-	// panel has not opted out of stretching altogether.
+	// Enable Qt's last-section fallback only when no designated stretch column
+	// is visible and the panel has not opted out of stretching.
 	bool const bStretchColumnUsable = m_iStretchColumn >= 0 && !m_pView->isColumnHidden(m_iStretchColumn);
 
 	m_pView->horizontalHeader()->setStretchLastSection(m_bStretchLastColumn && !bStretchColumnUsable);

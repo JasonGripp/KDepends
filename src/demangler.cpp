@@ -12,7 +12,7 @@
 
 namespace {
 // The ABI function returns a malloc'd buffer that must be released with
-// std::free, not delete; this guard makes an early return safe.
+// std::free rather than delete. This guard makes early returns safe.
 class CFreeGuard
 {
 private:
@@ -33,7 +33,7 @@ public:
 	CFreeGuard(CFreeGuard const&) = delete;
 	CFreeGuard& operator=(CFreeGuard const&) = delete;
 };
-} //namespace
+}
 
 bool IsMangledName(std::string_view sName)
 {
@@ -123,9 +123,9 @@ std::string CDemangler::lookupOrInsert(std::string const& rsName)
 		++m_uMissCount;
 	}
 
-	// The lock is deliberately not held across the ABI call: it is slow enough
+	// The lock is not held across the ABI call because it is slow enough
 	// that holding it would serialise every model repaint. A concurrent
-	// duplicate demangle of the same name is harmless — the second insert
+	// duplicate demangle of the same name is harmless. The second insert
 	// overwrites an identical value.
 	std::string sDemangled = DemangleNameUncached(rsName);
 

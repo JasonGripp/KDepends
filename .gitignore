@@ -1,3 +1,4 @@
+/.agents/
+/.claude/
 /build/
 /build-local/
-/.claude/

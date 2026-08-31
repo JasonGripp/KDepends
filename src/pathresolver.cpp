@@ -54,7 +54,7 @@ bool IsTokenCharacter(char cCharacter)
 		return true;
 	return cCharacter == '_';
 }
-} //namespace
+}
 
 CPathResolver::CPathResolver()
 : CPathResolver(&CLdCache::Instance())
@@ -85,7 +85,7 @@ bool CPathResolver::Resolve(SResolveRequest const& rRequest, SResolveResult& rOu
 
 	SModuleInfo const& rRequester = *rRequest.pRequester;
 
-	// Step 0: a name containing a slash is used as a path directly; the linker
+	// Step 0: a name containing a slash is used as a path directly. The linker
 	// skips the search entirely for such names.
 	if (rRequest.sNeededName.find('/') != std::string::npos)
 	{
@@ -110,7 +110,7 @@ bool CPathResolver::Resolve(SResolveRequest const& rRequest, SResolveResult& rOu
 			return true;
 	}
 
-	// Step 3: the requester's own DT_RUNPATH; never inherited, never transitive.
+	// Step 3: the requester's own DT_RUNPATH, which is never inherited.
 	if (!rRequester.vRunpath.empty())
 	{
 		std::vector<std::string> const vRunpath = ExpandSearchList(rRequester.vRunpath, rRequester);

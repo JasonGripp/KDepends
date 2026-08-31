@@ -28,7 +28,7 @@ enum class ESearchSource : std::uint8_t
 struct SResolveRequest
 {
 	std::string sNeededName;
-	// The module that needs it; supplies sPath (for $ORIGIN), vRpath, vRunpath,
+	// The module that needs it. Supplies sPath (for $ORIGIN), vRpath, vRunpath,
 	// eClass and eMachine. Never null.
 	SModuleInfo const* pRequester = nullptr;
 	// Already-expanded DT_RPATH entries from ancestors, nearest ancestor first.
@@ -47,9 +47,8 @@ struct SResolveResult
 	SElfSniff sniff;
 };
 
-// Turns one DT_NEEDED name into a filesystem path by reproducing the glibc
-// dynamic linker's search order. After construction the object is immutable
-// and every method is const, so a single instance is shared by all workers.
+// Resolves one DT_NEEDED name using the glibc dynamic linker's search order.
+// Instances are immutable after construction and safe to share among workers.
 class CPathResolver
 {
 private:

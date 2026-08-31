@@ -27,10 +27,8 @@ class QPoint;
 class QSplitter;
 class QTreeView;
 
-// Which columns each of a tab's three tables has hidden, as source column
-// indexes. Grouped into one value because the choice is global: the window
-// carries it between tabs and to the config, the way it carries the demangle
-// setting.
+// Hidden source-column indexes for all three tables. The window shares this
+// setting between tabs and stores it in the application configuration.
 struct SColumnVisibility
 {
 	QList<int> vHiddenImports;
@@ -38,9 +36,8 @@ struct SColumnVisibility
 	QList<int> vHiddenModules;
 };
 
-// The width of every column of a tab's three tables, in source column order.
-// Global for the same reason the hidden set is: the window carries one layout
-// between tabs and to the config.
+// Widths for all three tables in source-column order. The window shares this
+// layout between tabs and stores it in the application state.
 struct SColumnWidths
 {
 	QList<int> vImports;
@@ -48,9 +45,8 @@ struct SColumnWidths
 	QList<int> vModules;
 };
 
-// One opened file = one CModuleTab. It owns the tab's analysis session, its
-// four models, the four-panel splitter layout, and every interaction inside
-// the tab. It is the only class that connects engine signals to models.
+// Owns one file's analysis session, models, layout, and tab-local interactions.
+// This is the only class that connects engine signals to models.
 class CModuleTab : public QWidget
 {
 	Q_OBJECT
@@ -78,7 +74,7 @@ private:
 	bool m_bBusy = false;
 	bool m_bClosureComplete = false;
 	// Splitter defaults are proportions of the real height, which only exists
-	// once the tab has been shown; these track whether that is still pending.
+	// once the tab has been shown. These track whether that is still pending.
 	bool m_bSplitterStateRestored = false;
 	bool m_bDefaultSplitterSizesApplied = false;
 	QString m_sError;
@@ -95,8 +91,7 @@ public:
 	void SetDemangleEnabled(bool bEnabled);
 	bool IsBusy() const;
 	void Cancel();
-	// Shows — or re-focuses, when already open — the filter box of whichever
-	// panel currently has focus.
+	// Shows the focused panel's filter box, or refocuses it when already open.
 	void ShowFilter();
 
 	QByteArray SaveSplitterState() const;
@@ -125,10 +120,9 @@ Q_SIGNALS:
 	void BusyChanged(bool bBusy);
 	void TitleChanged();
 	void StatusMessage(QString const& rsMessage);
-	// The demangle setting is global; the tab only asks the window to flip it.
+	// The demangle setting is global. The tab asks the window to change it.
 	void DemangleToggleRequested(bool bEnabled);
-	// Likewise for hidden columns: the tab reports the user's choice and the
-	// window is what spreads it to the other tabs and stores it.
+	// Hidden columns are also global. The window propagates and stores changes.
 	void ColumnVisibilityChanged(SColumnVisibility const& rVisibility);
 
 private Q_SLOTS:

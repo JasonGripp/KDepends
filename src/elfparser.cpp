@@ -48,7 +48,7 @@ std::string CanonicalPath(std::string const& rsPath)
 
 	return rsPath;
 }
-} //namespace
+}
 
 CElfParser::CElfParser()
 {
@@ -331,7 +331,7 @@ bool CElfParser::parseProgramHeaders()
 
 bool CElfParser::parseSectionHeaders()
 {
-	// Section headers are optional: a file without them still parses fully
+	// Section headers are optional. A file without them still parses fully
 	// from its program headers and is reported as stripped.
 	m_info.bStripped = true;
 
@@ -412,7 +412,7 @@ bool CElfParser::parseDynamicSection()
 		}
 	}
 
-	// A static executable simply has no dynamic section; that is not an error.
+	// A static executable has no dynamic section, which is not an error.
 	if (uDynamicOffset == g_uInvalidFileOffset)
 		return true;
 
@@ -565,7 +565,7 @@ bool CElfParser::parseDynamicEntries()
 bool CElfParser::parseVersionTables()
 {
 	// Malformed chains are truncated at the first inconsistency rather than
-	// being fatal; already-collected mappings are kept.
+	// being fatal. Already-collected mappings are kept.
 	if (m_versions.uVerdefOffset != 0 && m_versions.uVerdefCount > 0)
 	{
 		std::uint64_t uOffset = m_versions.uVerdefOffset;

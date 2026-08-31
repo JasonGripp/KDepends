@@ -20,7 +20,7 @@
 #include <unordered_map>
 #include <vector>
 
-// Opaque per-tab handle; 0 is never a valid session.
+// Opaque per-tab handle. Zero is never a valid session.
 using SessionId = std::uint64_t;
 
 // Delivered when a previously discovered placeholder module gains its full
@@ -31,7 +31,6 @@ struct SModuleUpdate
 	SModuleInfo info;
 };
 
-// Delivered whenever a session's progress changes.
 struct SEngineStatus
 {
 	bool bBusy = false;
@@ -50,14 +49,8 @@ Q_DECLARE_METATYPE(SModuleUpdate)
 Q_DECLARE_METATYPE(SEngineStatus)
 Q_DECLARE_METATYPE(std::vector<SImportSymbol>)
 
-// The concurrency bridge, and the only place the core analysis layer meets Qt.
-// The UI thread never parses a file, never touches the disk, and never reads a
-// live closure: it only calls the request methods below and receives copies
-// via queued signals.
-//
-// Qt does not constrain signal or slot names, so signals and public slots use
-// the project's PascalCase convention; private slots use camelCase like other
-// private member functions.
+// Bridges core analysis workers to Qt through queued, copy-only results.
+// The UI thread never parses files or reads live resolver state.
 class CAnalysisEngine : public QObject
 {
 	Q_OBJECT

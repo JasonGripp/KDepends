@@ -44,7 +44,7 @@ void CImportsModel::ApplyResolution(std::size_t uModule, std::vector<SImportSymb
 		return;
 	if (vImports.size() != m_vImports.size())
 	{
-		// Row count changed under us; a reset is the only correct answer.
+		// Reset because the row count changed while the update was in flight.
 		SetImports(uModule, std::move(vImports), true);
 		return;
 	}
@@ -240,8 +240,8 @@ QVariant CImportsModel::headerData(int iSection, Qt::Orientation eOrientation, i
 	if (eOrientation != Qt::Horizontal)
 		return QVariant();
 
-	// The status column's heading is an abbreviation over an icon, so its name
-	// lives in the tooltip; that is also what names it in the column chooser.
+	// The status heading is an icon, so its tooltip also names the column in the
+	// column chooser.
 	if (iRole == Qt::ToolTipRole)
 	{
 		if (static_cast<EColumn>(iSection) == EColumn::Status)

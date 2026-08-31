@@ -14,7 +14,6 @@
 
 class CLdCache;
 
-// The payload delivered when a tab's root file has been analyzed.
 struct SRootResult
 {
 	bool bSuccess = false;
@@ -28,7 +27,6 @@ struct SRootResult
 	std::vector<SModuleInfo> vNewModuleInfos;
 };
 
-// The payload delivered when one node has been expanded.
 struct SExpandOutcome
 {
 	bool bSuccess = false;
@@ -44,10 +42,8 @@ struct SExpandOutcome
 	SModuleInfo moduleInfo;
 };
 
-// Owns one root file's SModuleClosure and grows it one node at a time. This is
-// the only unit that mutates a closure, and it is internally thread-safe so
-// several worker threads can expand different nodes of the same tab
-// concurrently. No file I/O ever happens while the lock is held.
+// Owns and grows one root file's closure. Concurrent expansion is safe, and no
+// file I/O occurs while the closure lock is held.
 class CDependencyResolver
 {
 private:

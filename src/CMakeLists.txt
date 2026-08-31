@@ -36,9 +36,8 @@ qt_add_resources(kdepends "kdepends_xmlgui"
 	FILES kdependsui.rc
 )
 
-# The application icon is compiled in so an uninstalled build-tree run shows
-# the real icon; an installed run prefers the icon theme copy (see
-# ApplicationIcon() in icons.cpp).
+# The compiled icon supports build-tree runs. Installed builds prefer the icon
+# theme copy (see ApplicationIcon() in icons.cpp).
 qt_add_resources(kdepends "kdepends_icon"
 	PREFIX "/icons"
 	BASE "icons"

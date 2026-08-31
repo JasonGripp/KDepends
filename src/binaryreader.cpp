@@ -188,7 +188,6 @@ std::string_view CBinaryReader::ReadStringAt(std::size_t uTableOffset, std::size
 
 	if (uEnd >= uLimit)
 	{
-		// No terminator inside the table.
 		m_bError = true;
 		return {};
 	}
@@ -332,8 +331,8 @@ bool CBinaryReader::ReadDynamicEntryAt(std::size_t uOffset, SDynamicEntry& rEntr
 	}
 	else
 	{
-		// d_tag is signed on disk for ELFCLASS32, but the tag constants are
-		// defined by their unsigned 32-bit spelling; zero-extend so the
+		// d_tag is signed on disk for ELFCLASS32, but the tag constants use their
+		// unsigned 32-bit spelling. Zero-extend so the
 		// GNU-range tags compare equal to EDynamicTag.
 		rEntry.eTag = static_cast<EDynamicTag>(readLittleEndianAt(uOffset + 0, 4));
 		rEntry.uValue = readLittleEndianAt(uOffset + 4, 4);
@@ -506,8 +505,8 @@ bool LoadFileContents(std::string const& rsPath, std::vector<std::uint8_t>& rvOu
 			return false;
 		}
 
-		// A short read only matters when the file shrank under us; reading
-		// fewer bytes than requested is not an error for the sniff path.
+		// Preserve bytes from a short read. The parser or bounded sniff validates
+		// the truncated buffer.
 		rvOutData.resize(static_cast<std::size_t>(iRead));
 
 		if (fileStream.bad())

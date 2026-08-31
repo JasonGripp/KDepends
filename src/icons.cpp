@@ -18,8 +18,7 @@
 #include <QString>
 
 namespace {
-// QIcon construction is not free and these functions are called once per
-// visible cell per repaint, so the cache is required, not optional.
+// Cache icons because these functions run once per visible cell during repaint.
 QIcon themedIcon(char const* pcPrimary, char const* pcFallback1 = nullptr, char const* pcFallback2 = nullptr)
 {
 	static QHash<QString, QIcon> s_mapCache;
@@ -76,7 +75,7 @@ QString hexText(unsigned int uValue)
 {
 	return QStringLiteral("0x%1").arg(uValue, 0, 16);
 }
-} //namespace
+}
 
 QIcon ModuleStatusIcon(EModuleStatus eStatus)
 {
@@ -122,9 +121,9 @@ QIcon SymbolTypeIcon(ESymbolType eType)
 
 QIcon ApplicationIcon()
 {
-	// Installed, the icon theme copy wins so the user's theme can override it;
-	// from the build tree the theme lookup fails and the compiled-in resource
-	// keeps the real icon.
+	// Installed builds prefer the icon theme so the user's theme can override it.
+	// In the build tree, the compiled resource supplies the real icon when theme
+	// lookup fails.
 	if (QIcon::hasThemeIcon(QStringLiteral("kdepends")))
 		return QIcon::fromTheme(QStringLiteral("kdepends"));
 
@@ -185,8 +184,8 @@ QString SymbolStatusText(ESymbolStatus eStatus)
 	return i18n("Unknown");
 }
 
-// The symbol type/binding/visibility spellings are deliberately not translated:
-// they are the standard ELF names and users match them against readelf output.
+// Symbol type, binding, and visibility names stay untranslated because users
+// match these standard ELF names against readelf output.
 QString SymbolTypeText(ESymbolType eType)
 {
 	switch (eType)

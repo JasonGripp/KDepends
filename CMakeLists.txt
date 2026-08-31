@@ -18,8 +18,8 @@ include(ECMSetupVersion)
 include(ECMInstallIcons)
 include(FeatureSummary)
 
-# Generates kdepends_version.h from the project() version above, so the version
-# number is defined in exactly one place; main.cpp feeds it to KAboutData.
+# Generates kdepends_version.h from the project() version above so main.cpp and
+# the build use the same version.
 ecm_setup_version(${PROJECT_VERSION}
 	VARIABLE_PREFIX KDEPENDS
 	VERSION_HEADER "${CMAKE_BINARY_DIR}/kdepends_version.h"

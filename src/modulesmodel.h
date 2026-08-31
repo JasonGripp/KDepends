@@ -14,10 +14,8 @@
 #include <unordered_map>
 #include <vector>
 
-// Table model for the flattened list of every unique module in a tab's
-// dependency closure. Unlike the symbol models it is populated incrementally:
-// a row appears as soon as a module is discovered (with only its path known)
-// and its metadata columns fill in when that module is parsed. UI thread only.
+// UI-thread table model populated as modules are discovered. Placeholder rows
+// gain metadata when parsing completes.
 class CModulesModel : public QAbstractTableModel
 {
 	Q_OBJECT

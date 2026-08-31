@@ -13,9 +13,8 @@
 #include <cstddef>
 #include <vector>
 
-// Table model for the imports of the module currently selected in a tab. Holds
-// its own copy of the import list and re-renders when the demangle toggle
-// flips or when resolution results arrive. UI thread only.
+// UI-thread table model for the selected module's imports. It refreshes after
+// demangling changes or new resolution results.
 class CImportsModel : public QAbstractTableModel
 {
 	Q_OBJECT

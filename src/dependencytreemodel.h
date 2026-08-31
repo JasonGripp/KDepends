@@ -14,13 +14,8 @@
 #include <cstddef>
 #include <vector>
 
-// The item model behind a tab's left-hand dependency tree. It keeps its own
-// mirror of the node tree, built purely from the payloads the engine delivers;
-// it never reads a live SModuleClosure and never touches the analysis layer's
-// memory. That is what keeps the UI thread free of locks.
-//
-// QAbstractItemModel overrides keep their Qt spelling because they are virtual
-// overrides; everything this class introduces uses PascalCase.
+// UI-thread mirror of a dependency tree, built only from engine payloads.
+// It never reads live analysis state and therefore needs no resolver locks.
 class CDependencyTreeModel : public QAbstractItemModel
 {
 	Q_OBJECT
@@ -41,8 +36,8 @@ private:
 		bool bLeaf = false;
 		bool bExpanded = false;
 		bool bRequested = false;
-		// False for a slot that only exists because a later node index arrived
-		// first; such holes are never rendered.
+		// False for storage created before an earlier node index arrives.
+		// Invalid entries are never rendered.
 		bool bValid = false;
 	};
 

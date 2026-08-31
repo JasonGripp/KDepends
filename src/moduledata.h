@@ -11,10 +11,7 @@
 #include <unordered_map>
 #include <vector>
 
-// The shared vocabulary of the whole application: what an analyzed module is,
-// what its symbols are, and what a root file's dependency closure looks like.
-// Pure aggregates and enumerations; every type here is copyable and movable
-// because the concurrency layer copies these structures across threads.
+// Copyable value types shared between analysis workers and the UI thread.
 
 // "No such module / node".
 inline constexpr std::size_t g_uInvalidIndex = static_cast<std::size_t>(-1);
@@ -40,7 +37,6 @@ enum class ESymbolStatus : std::uint8_t
 	Exported,
 };
 
-// One undefined dynamic symbol of a module.
 struct SImportSymbol
 {
 	std::string sName;
@@ -56,7 +52,6 @@ struct SImportSymbol
 	std::string sProviderPath;
 };
 
-// One defined dynamic symbol of a module.
 struct SExportSymbol
 {
 	std::string sName;
@@ -71,8 +66,6 @@ struct SExportSymbol
 	bool bDefaultVersion = true;
 };
 
-// Everything known about one analyzed file. This is the unit copied to the UI
-// thread when a module is discovered.
 struct SModuleInfo
 {
 	std::string sPath;
@@ -96,8 +89,8 @@ struct SModuleInfo
 	bool bStripped = true;
 	bool bPositionIndependent = false;
 	bool bHasDynamicSection = false;
-	// False while this is a placeholder created from a search hit's sniff;
-	// true once the file itself has been parsed. Models must not treat a
+	// False while this is a placeholder created from a search hit's sniff.
+	// True once the file itself has been parsed. Models must not treat a
 	// placeholder's metadata as authoritative.
 	bool bParsed = false;
 	std::vector<SImportSymbol> vImports;
@@ -105,9 +98,7 @@ struct SModuleInfo
 	bool bImportsResolved = false;
 };
 
-// One node of the dependency tree. Nodes are stored flat in a vector and
-// reference each other by index, which makes the whole structure trivially
-// copyable and safe to snapshot across threads.
+// One dependency-tree node. Index-based links keep closure snapshots copyable.
 struct SDependencyNode
 {
 	std::size_t uParent = g_uInvalidIndex;
@@ -121,7 +112,6 @@ struct SDependencyNode
 	bool bExpanding = false;
 };
 
-// The full state of one root file's analysis.
 struct SModuleClosure
 {
 	std::vector<SModuleInfo> vModules;

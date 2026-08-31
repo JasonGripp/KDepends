@@ -28,10 +28,8 @@ class QLabel;
 class QTabWidget;
 class QUrl;
 
-// The KXmlGui main window: menus and actions, the closable tab bar of
-// CModuleTabs, file opening from every source, the global demangle toggle, and
-// all settings persistence. It never performs analysis itself; it only routes
-// paths to tabs.
+// Owns application-wide actions, tabs, and persistent settings.
+// Analysis remains in CAnalysisEngine and CModuleTab.
 class CMainWindow : public KXmlGuiWindow
 {
 	Q_OBJECT

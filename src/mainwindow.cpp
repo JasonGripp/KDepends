@@ -39,10 +39,8 @@
 #include <memory>
 
 namespace {
-// Group names in two different files. The config file (kdependsrc) holds
-// only what the user deliberately chose; everything the app merely observed
-// — layout, history — goes to the state file (kdependsstaterc), where a
-// config backup will not carry it along.
+// kdependsrc stores deliberate settings. kdependsstaterc stores observed state
+// such as layout and history so configuration backups do not carry it along.
 constexpr char const* g_pcConfigGroup = "General";
 constexpr char const* g_pcStateGroup = "General";
 constexpr char const* g_pcRecentFilesGroup = "RecentFiles";
@@ -57,16 +55,16 @@ QString CanonicalOrOriginal(QString const& rsPath)
 
 	return info.absoluteFilePath();
 }
-} //namespace
+}
 
 CMainWindow::CMainWindow(QWidget* pParent)
 : KXmlGuiWindow(pParent)
 {
-	// Deliberately unparented: the unique_ptr owns it, and it must outlive
+	// Deliberately unparented. The unique_ptr owns it, and it must outlive
 	// every tab (each tab holds a reference to it).
 	m_pEngine = std::make_unique<CAnalysisEngine>();
 
-	// KMainWindow's WA_DeleteOnClose is deliberately left on: that self-delete
+	// KMainWindow's WA_DeleteOnClose remains enabled because its self-delete
 	// is what drives the last-window-closed quit. Clearing it leaves a hidden
 	// window and an event loop that never returns, so the process survives its
 	// own close. `main` heap-allocates this window to match.
@@ -272,9 +270,8 @@ QSize CMainWindow::sizeHint() const
 {
 	// KMainWindow takes the first-launch size from this hint, before the state
 	// config holds any geometry (it ignores a resize() in the constructor). The
-	// inherited hint is the empty placeholder page plus chrome — a couple of
-	// hundred pixels — so give a size suited to a tree beside two tables,
-	// capped to keep it on the screen the window opens on.
+	// inherited hint reflects only the empty placeholder page and window chrome.
+	// Choose a practical size, capped to the screen where the window opens.
 	QSize const preferred{1280, 800};
 
 	QScreen const* const pScreen = screen();
@@ -372,8 +369,8 @@ void CMainWindow::closeTab(int iIndex)
 
 	m_pTabWidget->removeTab(iIndex);
 
-	// Deleted immediately rather than deferred: the tab holds a reference to
-	// the engine, and a deferred delete could outlive it. The sender is the
+	// Delete immediately because the tab holds a reference to the engine, and a
+	// deferred delete could outlive it. The sender is the
 	// tab widget, not the tab, so this is not a delete-during-own-signal.
 	delete pTab;
 
@@ -497,8 +494,6 @@ void CMainWindow::lookUpSelectedSymbol()
 		return;
 	}
 
-	// The tab owns the browser hand-off; asking it keeps the URL construction
-	// in one place.
 	pTab->LookUpSymbolOnline(sSymbol);
 }
 

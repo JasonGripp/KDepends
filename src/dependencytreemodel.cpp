@@ -132,7 +132,6 @@ void CDependencyTreeModel::ApplyModuleUpdate(std::size_t uModule, SModuleInfo co
 
 		rNode.sSoname = sSoname;
 
-		// A resolved module with no needed names will never gain children.
 		if (rNode.eStatus == EModuleStatus::Resolved && rInfo.vNeeded.empty() && !rNode.bExpanded)
 			rNode.bLeaf = true;
 
@@ -412,7 +411,7 @@ void CDependencyTreeModel::appendChildren(std::size_t uParent, std::vector<SChil
 		if (rChild.uNode == g_uInvalidIndex)
 			continue;
 
-		// Tolerates out-of-order payloads by growing over the gap.
+		// Tolerate out-of-order payloads by reserving any missing indexes.
 		if (rChild.uNode >= m_vNodes.size())
 			m_vNodes.resize(rChild.uNode + 1);
 

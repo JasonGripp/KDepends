@@ -110,8 +110,8 @@ void CImportResolver::buildSearchOrder()
 
 		SDependencyNode const& rNode = m_closure.vNodes[uNode];
 
-		// Duplicate nodes contribute nothing new (their module is already in
-		// the list at its earlier position); Missing and Error contribute
+		// Duplicate nodes contribute nothing new because their module is already
+		// at its earlier position. Missing and Error nodes contribute
 		// nothing at all.
 		if (rNode.uModule != g_uInvalidIndex
 			&& (rNode.eStatus == EModuleStatus::Root || rNode.eStatus == EModuleStatus::Resolved)
@@ -189,7 +189,7 @@ bool CImportResolver::findProvider(SImportSymbol const& rImport, std::size_t uRe
 			if (!symbolMatches(rImport, rExport))
 				continue;
 
-			// An unversioned import prefers a default definition; a non-default
+			// An unversioned import prefers a default definition. A non-default
 			// one is only a fallback.
 			if (rImport.sVersion.empty() && !rExport.bDefaultVersion)
 			{
@@ -219,7 +219,6 @@ bool CImportResolver::findProvider(SImportSymbol const& rImport, std::size_t uRe
 
 bool CImportResolver::symbolMatches(SImportSymbol const& rImport, SExportSymbol const& rExport)
 {
-	// A definition that is itself undefined is not a definition.
 	if (rExport.uSectionIndex == static_cast<std::uint16_t>(ESectionIndex::Undefined))
 		return false;
 

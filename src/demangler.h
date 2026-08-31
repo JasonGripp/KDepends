@@ -12,7 +12,7 @@
 // Cheap pre-filter so C symbols never reach the ABI call.
 bool IsMangledName(std::string_view sName);
 
-// Calls abi::__cxa_demangle directly; returns rsName unchanged when the name
+// Calls abi::__cxa_demangle directly. Returns rsName unchanged when the name
 // is not mangled or the call fails. Never throws.
 std::string DemangleNameUncached(std::string const& rsName);
 

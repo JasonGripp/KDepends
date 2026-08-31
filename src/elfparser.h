@@ -26,7 +26,6 @@ struct SElfSniff
 	EElfType eType = EElfType::None;
 };
 
-// Holder for the resolved symbol-versioning inputs.
 struct SVersionTables
 {
 	std::uint64_t uVersymOffset = 0;
@@ -38,7 +37,7 @@ struct SVersionTables
 	std::unordered_map<std::uint16_t, std::string> mapIndexToFile;
 };
 
-// One instance parses one file. Instances are cheap; workers create one per
+// One instance parses one file. Instances are cheap, so workers create one per
 // module. Not thread-safe, but independent instances share no state at all.
 class CElfParser
 {

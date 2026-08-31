@@ -22,13 +22,8 @@ class QSortFilterProxyModel;
 class QTableView;
 class QToolButton;
 
-// The reusable panel used by the imports, exports and flattened-modules views:
-// a table with a hidden-by-default substring filter box beneath it, plus the
-// table behavior all three share (copy, select-all, sorting, per-column
-// show/hide, context menu).
-//
-// All coordinates crossing this class' boundary are source coordinates; proxy
-// indices never leak to owners.
+// Shared table panel with filtering, sorting, copying, and column controls.
+// Its public indexes and column numbers always use source-model coordinates.
 class CFilteredTable : public QWidget
 {
 	Q_OBJECT
@@ -51,7 +46,7 @@ private:
 	bool m_bFirstPopulation = true;
 	bool m_bAdjustingStretch = false;
 	// Whether the last visible column may absorb spare width when no designated
-	// stretch column is there to do it; off leaves the spare width blank.
+	// stretch column is there to do it. Off leaves the spare width blank.
 	bool m_bStretchLastColumn = true;
 
 public:
@@ -105,8 +100,8 @@ public:
 Q_SIGNALS:
 
 	void ContextMenuRequested(QMenu* pMenu, QModelIndex const& rSourceIndex);
-	// Emitted only for a change the user made here; restoring a stored set is
-	// silent, so pushing one panel's columns to another cannot echo back.
+	// Emitted only for changes made here. Restoring a stored set is silent, so
+	// pushing one panel's columns to another cannot echo back.
 	void ColumnVisibilityChanged();
 	void SelectionChanged(QModelIndex const& rSourceIndex);
 	void Activated(QModelIndex const& rSourceIndex);

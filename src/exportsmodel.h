@@ -14,10 +14,7 @@
 #include <cstddef>
 #include <vector>
 
-// Table model for the exported (defined) dynamic symbols of the module
-// currently selected in a tab. Structurally the twin of CImportsModel, but
-// exports are definitions rather than resolutions: there is no provider and no
-// resolution step. UI thread only.
+// UI-thread table model for the selected module's defined dynamic symbols.
 class CExportsModel : public QAbstractTableModel
 {
 	Q_OBJECT

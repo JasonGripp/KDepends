@@ -34,8 +34,8 @@ int main(int iArgc, char** ppcArgv)
 		QStringLiteral("https://github.com/JasonGripp/KDepends"),
 		QStringLiteral("https://github.com/JasonGripp/KDepends/issues"));
 
-	// KAboutData otherwise derives this from the homepage host, giving
-	// "com.github.kdepends"; the installed entry is kdepends.desktop, so say so
+	// KAboutData otherwise derives "com.github.kdepends" from the homepage host.
+	// The installed entry is kdepends.desktop, so set the name
 	// explicitly. setApplicationData() propagates it to QGuiApplication, which
 	// is what the desktop portal and the Wayland app id are read from.
 	aboutData.setDesktopFileName(QStringLiteral("kdepends"));
@@ -59,8 +59,7 @@ int main(int iArgc, char** ppcArgv)
 
 		if (url.isValid() && !url.scheme().isEmpty() && url.scheme() != QLatin1String("file"))
 		{
-			// KDepends is a local-file inspector; downloading a remote binary
-			// is a non-goal.
+			// KDepends inspects local files and never downloads remote binaries.
 			errorStream << QStringLiteral("kdepends: ignoring non-local URL: %1\n").arg(rsArgument);
 			continue;
 		}

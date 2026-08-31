@@ -11,7 +11,6 @@
 #include <unordered_map>
 #include <vector>
 
-// The payload delivered per module.
 struct SImportResolution
 {
 	bool bSuccess = false;

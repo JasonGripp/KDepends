@@ -57,8 +57,6 @@ CModuleTab::CModuleTab(CAnalysisEngine& rEngine, QString const& rsFilePath, QWid
 	connectEngine();
 	connectViews();
 
-	// Analysis starts as soon as the tab exists; the tab is interactive
-	// immediately.
 	m_rEngine.RequestRoot(m_uSession);
 }
 
@@ -130,13 +128,13 @@ void CModuleTab::buildUi()
 	m_pModulesTable->View()->setColumnWidth(static_cast<int>(CModulesModel::EColumn::Status), 24);
 
 	// Symbol names are the one column whose useful width has no upper bound, so
-	// they take the panel's spare width and the fixed-shape columns beside them
+	// they take the panel's spare width while the fixed-width columns beside them
 	// keep whatever the user or the auto-fit gave them.
 	m_pImportsTable->SetStretchColumn(static_cast<int>(CImportsModel::EColumn::Symbol));
 	m_pExportsTable->SetStretchColumn(static_cast<int>(CExportsModel::EColumn::Symbol));
 
-	// The modules table has no such column: every column has a natural width, so
-	// spare panel width stays blank instead of inflating whichever column is last.
+	// Every module column has a natural width, so spare panel width stays blank
+	// instead of inflating whichever column is last.
 	m_pModulesTable->SetStretchLastColumn(false);
 
 	updateStatusLabel();
@@ -299,7 +297,7 @@ void CModuleTab::RestoreSplitterState(QByteArray const& rState)
 	m_pTreeSplitter->restoreState(treeState);
 	m_pSymbolSplitter->restoreState(symbolState);
 
-	// Suppresses the first-show defaults: the saved layout wins.
+	// A restored layout takes precedence over the first-show defaults.
 	m_bSplitterStateRestored = true;
 }
 
@@ -334,8 +332,7 @@ SColumnWidths CModuleTab::ColumnWidths() const
 
 void CModuleTab::SetColumnWidths(SColumnWidths const& rWidths)
 {
-	// After SetColumnVisibility, so a width stored for a column the user has
-	// since hidden is skipped rather than handed to a visible column.
+	// Zero widths leave hidden or newly added columns at their current size.
 	m_pImportsTable->SetColumnWidths(rWidths.vImports);
 	m_pExportsTable->SetColumnWidths(rWidths.vExports);
 	m_pModulesTable->SetColumnWidths(rWidths.vModules);

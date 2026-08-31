@@ -26,7 +26,7 @@ namespace {
 // Status emissions are coalesced to at most one per this many milliseconds
 // per session, plus one on each busy-state transition.
 constexpr qint64 g_iStatusIntervalMs = 100;
-} //namespace
+}
 
 // Held by std::shared_ptr so in-flight tasks keep it alive even if the tab is
 // gone.
@@ -47,7 +47,6 @@ struct CAnalysisEngine::SSession
 	bool bLastBusy = false;
 };
 
-// An implementation detail of the engine; it appears in no header.
 class CAnalysisTask : public QRunnable
 {
 public:
@@ -99,7 +98,7 @@ public:
 			m_bHasResult = false;
 		}
 
-		// The counter must drop before the result is posted: the delivery slot
+		// The counter must drop before the result is posted. The delivery slot
 		// treats "no unexpanded nodes and nothing outstanding" as closure
 		// completion, and this task's own work is finished by now.
 		pSession->uOutstanding.fetch_sub(1);
@@ -222,7 +221,7 @@ CAnalysisEngine::CAnalysisEngine(QObject* pParent)
 	m_pool.setMaxThreadCount(qMax(2, QThread::idealThreadCount()));
 	m_pool.setExpiryTimeout(-1);
 
-	// Warm the ld.so cache so the first Open does not pay for it.
+	// Warm the ld.so cache before the first analysis request.
 	m_pool.start(QRunnable::create([]()
 		{ CLdCache::Instance(); }));
 }

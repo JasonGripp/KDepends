@@ -22,7 +22,7 @@ bool IsLeafStatus(EModuleStatus eStatus)
 		|| eStatus == EModuleStatus::Duplicate
 		|| eStatus == EModuleStatus::Error;
 }
-} //namespace
+}
 
 CDependencyResolver::CDependencyResolver()
 : m_resolver(&CLdCache::Instance())
@@ -164,7 +164,7 @@ bool CDependencyResolver::expandClaimedNode(std::size_t uNode, SModuleInfo const
 {
 	rOutOutcome.uNode = uNode;
 
-	// Stage 2: the expensive work, deliberately outside the lock.
+	// Resolve paths outside the closure lock because this step performs file I/O.
 	std::vector<SResolveResult> vResults;
 	resolveNeededNames(rInfo, rvRpathChain, vResults);
 
@@ -174,7 +174,6 @@ bool CDependencyResolver::expandClaimedNode(std::size_t uNode, SModuleInfo const
 		return false;
 	}
 
-	// Stage 3.
 	commitExpansion(uNode, rInfo, vResults, rvRpathChain, rOutOutcome);
 	return rOutOutcome.bSuccess;
 }
@@ -401,7 +400,7 @@ void CDependencyResolver::commitExpansion(std::size_t uNode, SModuleInfo const& 
 
 	std::size_t const uModule = m_closure.vNodes[uNode].uModule;
 
-	// The node's own module is only a placeholder until now; this expansion is
+	// The node's own module is only a placeholder until now. This expansion is
 	// where its full metadata lands.
 	if (uModule != g_uInvalidIndex)
 	{
@@ -465,8 +464,8 @@ void CDependencyResolver::commitExpansion(std::size_t uNode, SModuleInfo const& 
 			}
 			else
 			{
-				// A placeholder carrying only what the search already knows;
-				// the full parse happens when this child node is expanded.
+				// A placeholder carries only what the search already knows.
+				// The full parse happens when this child node is expanded.
 				SModuleInfo placeholder;
 				placeholder.sPath = rResult.sPath;
 				placeholder.sOriginalPath = rResult.sOriginalPath;
