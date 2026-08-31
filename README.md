@@ -1,8 +1,8 @@
 # <img src="src/icons/sc-apps-kdepends.svg" alt="KDepends icon" width="40" height="40" align="top"/> KDepends
 
 A native KDE application for inspecting the dynamic dependencies of Linux ELF
-binaries — the Linux counterpart to the of the
-classic Windows Dependency Walker tool `depends.exe`.
+binaries — the Linux counterpart to the classic Windows Dependency Walker tool
+`depends.exe`.
 
 Open an executable or shared library and KDepends shows, in one window:
 
@@ -14,7 +14,7 @@ Open an executable or shared library and KDepends shows, in one window:
 - a **flattened table of every unique module** in the closure, with per-module
   metadata.
 
-KDepends is a static inspector. It reads bytes; it never loads, maps, or
+KDepends is a static inspector. It simply reads bytes. It never loads, maps, or
 executes the file you point it at.
 
 ![The KDepends main window: dependency tree, imports, exports, and the flattened modules table](KDepends.png)
@@ -39,13 +39,13 @@ executes the file you point it at.
   stripped.
 - **Fully threaded analysis** — every byte of parsing and resolution happens on
   a background thread pool. The window stays interactive no matter how large the
-  dependency closure is; panels fill in as results arrive, and the tree expands
+  dependency closure is. Panels fill in as results arrive, and the tree expands
   lazily.
 - **Tabs** — one tab per opened file, opened via File→Open, the recent-files
   list, the command line, or drag-and-drop onto the window.
 - **Live filters** beneath the imports, exports, and modules tables, and
   standard copy/select-all in every table.
-- **In-project ELF parsing** — no libelf or ELFIO dependency; every read is
+- **In-project ELF parsing** — no libelf or ELFIO dependency. Every read is
   bounds-checked, so truncated or malformed files produce a clear error rather
   than a crash.
 
@@ -69,7 +69,7 @@ sudo cmake --install build
 ```
 
 On Fedora/openSUSE the dependencies are roughly `qt6-qtbase-devel`,
-`kf6-*-devel`, and `extra-cmake-modules`; on Debian/Ubuntu, `qt6-base-dev`,
+`kf6-*-devel`, and `extra-cmake-modules`. On Debian/Ubuntu, `qt6-base-dev`,
 `libkf6*-dev`, and `extra-cmake-modules`.
 
 ## Usage
@@ -91,7 +91,7 @@ You can also drag a binary onto the window, or use File→Open.
 | `Ctrl+C` / `Ctrl+A` | Copy selection / select all in a table |
 
 Right-clicking an import offers "Go to providing module" and "Look up symbol
-online"; right-clicking a module in the tree or the modules table offers copy
+online." Right-clicking a module in the tree or the modules table offers copy
 path, open in a new tab, and open the containing folder.
 
 Options, the recent-files list, and window geometry persist across sessions via
